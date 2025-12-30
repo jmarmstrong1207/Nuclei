@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using NuclearOption.DedicatedServer;
 using NuclearOption.Networking;
 using NuclearOption.Networking.Lobbies;
 using NuclearOption.SavedMission;
@@ -212,9 +213,10 @@ public static class MissionService
     
     // TODO: Deconstruct this into smaller, reusable functions
     /// <summary>
-    ///     Starts the next mission in the mission rotation.
+    ///     Starts the next mission in the mission rotation if m = null. If m is provided, it'll
+    ///     load that mission instead
     /// </summary>
-    public static async void StartNextMission(Player? player)
+    public static async void StartNextMission(Player? player, MissionOptions? m = null)
     {
         
         try
@@ -233,7 +235,7 @@ public static class MissionService
                 return;
             }
 
-            var nextOpt = mr.GetNext();
+            var nextOpt = m ?? mr.GetNext();
             if (!nextOpt.Key.TryGetKey(out var key))
             {
                 Nuclei.Logger?.LogWarning("Error: could not resolve mission key.");
