@@ -71,6 +71,8 @@ public class Nuclei : BaseUnityPlugin
         PlayerEvents.PlayerJoined += OnPlayerJoin;
         CommandService.RegisterCommand(new VoteKickCommand(Config));
         CommandService.RegisterCommand(new VoteOptionCommand(Config));
+        CommandService.RegisterCommand(new VoteSkipCommand(Config));
+        CommandService.RegisterCommand(new VoteMissionCommand(Config));
 
         if (IsPatched)
             Logger?.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
