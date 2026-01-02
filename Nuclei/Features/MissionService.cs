@@ -254,7 +254,7 @@ public static class MissionService
             // Switch to main thread for Unity scene/lobby ops
             await UniTask.SwitchToMainThread();
 
-            dsm.UpdateLobby(mission, false);
+            dsm.UpdateLobby(mission, true);
             var ok = await dsm.LoadNext(mission);
             if (!ok)
             {
@@ -262,7 +262,6 @@ public static class MissionService
                 return;
             }
 
-            dsm.keyValues.SetKeyValue("start_time", LobbyInstance.CreateStartTime());
             dsm.currentMission = mission;
             dsm.currentMissionOption = nextOpt;
         }
