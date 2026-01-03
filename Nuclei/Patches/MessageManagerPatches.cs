@@ -15,7 +15,7 @@ internal static class MessageManagerPatches
     private static void JoinMessagePostfix(Player joinedPlayer)
     {
         Nuclei.Logger?.LogInfo($"{joinedPlayer.PlayerName} joined the game");
-        ChatService.SendChatMessage(NucleiConfig.WelcomeMessage!.Value, joinedPlayer);
+        ChatService.SendPrivateChatMessage(NucleiConfig.WelcomeMessage!.Value, joinedPlayer);
         
         PlayerEvents.OnPlayerJoined(joinedPlayer);
     }
