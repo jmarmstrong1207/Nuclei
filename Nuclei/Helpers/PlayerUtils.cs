@@ -12,26 +12,15 @@ namespace Nuclei.Helpers;
 /// </summary>
 public static class PlayerUtils
 {
-    /// <summary>
-    ///     Get the Player object from an INetworkPlayer object.
-    /// </summary>
-    /// <param name="networkPlayer"> The INetworkPlayer object. </param>
-    /// <returns> The Player object, if available. </returns>
-    public static Player? GetPlayer(this INetworkPlayer networkPlayer)
-    {
-        return networkPlayer.Identity?.GetComponent<Player>();
-    }
 
     /// <summary>
     ///     Get the Player object from an INetworkPlayer object, if available.
     /// </summary>
     /// <param name="networkPlayer"> The INetworkPlayer object. </param>
-    /// <param name="playerComponent"> The Player component, if available. </param>
     /// <returns> The Player object, if available. </returns>
-    public static bool TryGetPlayer(this INetworkPlayer networkPlayer, out Player? playerComponent)
+    public static bool TryGetPlayer(this INetworkPlayer networkPlayer, out Player? player)
     {
-        playerComponent = networkPlayer.GetPlayer();
-        return playerComponent != null;
+        return PlayerHelper.TryGetPlayer(networkPlayer, out player);
     }
 
     /// <summary>
@@ -42,8 +31,13 @@ public static class PlayerUtils
     /// <returns></returns>
     public static bool TryFindPlayer(string playerName, out Player? playerObject)
     {
-            playerObject = Globals.AuthenticatedPlayers.FirstOrDefault(p => StripStaffPrefix(p.GetPlayer()?.PlayerName ?? "").ToLower().StartsWith(StripStaffPrefix(playerName).ToLower()))?.GetPlayer();
-        return playerObject != null;
+            return TryGetPlayer(Globals.AuthenticatedPlayers.FirstOrDefault(p =>
+            {
+                Player po;
+                TryGetPlayer(p, out po);
+                return StripStaffPrefix(po.PlayerName ?? "").ToLower()
+                    .StartsWith(StripStaffPrefix(playerName).ToLower());
+            }), out playerObject);
     }
     
     /// <summary>
@@ -51,7 +45,7 @@ public static class PlayerUtils
     /// </summary>
     /// <param name="playerName"> The player name. </param>
     /// <returns>Actual playername.</returns>
-    private static string StripStaffPrefix(string playerName)
+    public static string StripStaffPrefix(string playerName)
     {
         if (string.IsNullOrEmpty(playerName))
             return playerName;
