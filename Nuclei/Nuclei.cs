@@ -140,5 +140,6 @@ public class Nuclei : BaseUnityPlugin
     {
         BanService.VerifyNotBanned(player);
         PlayerUtils.ApplyOrRemoveStaffTag(player);
+        PlayerUtils.ApplyID(player);
     }
 }
