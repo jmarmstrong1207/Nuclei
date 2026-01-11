@@ -13,10 +13,11 @@ public class DonateCommand(ConfigFile config) : PermissionConfigurableCommand(co
 {
     public override string Name { get; } = "donate";
     public override string Description { get; } = "Donate some of your money to somebody";
-    public override string Usage { get; } = "donate <ID in their name> <Amount in millions>. e.g: </donate 1 50> donates 50 million";
+    public override string Usage { get; } = "donate <ID in their name> <Amount in millions>. e.g: '/donate 1 50' donates 50 million";
 
     public override bool Validate(Player player, string[] args)
     {
+        if (args.Length == 0) return false;
         if (!int.TryParse(args[0], out _) || !int.TryParse(args[1], out _))
         {
             ChatService.SendPrivateChatMessage("Invalid argument(s). Please try again", player);
@@ -45,7 +46,7 @@ public class DonateCommand(ConfigFile config) : PermissionConfigurableCommand(co
         player.SetAllocation(player.Allocation - amount);
         targetPlayer!.SetAllocation(targetPlayer.Allocation + amount);
         
-        ChatService.SendChatMessage($"{player.name} has donated ${amount}m to {targetPlayer.name}");
+        ChatService.SendChatMessage($"{player.PlayerName} has donated ${amount}m to {targetPlayer.PlayerName}");
         return true;
     }
 
@@ -66,5 +67,5 @@ public class DonateCommand(ConfigFile config) : PermissionConfigurableCommand(co
     }
 
 
-    public override PermissionLevel DefaultPermissionLevel { get; } = PermissionLevel.Moderator;
+    public override PermissionLevel DefaultPermissionLevel { get; } = PermissionLevel.Everyone;
 }
