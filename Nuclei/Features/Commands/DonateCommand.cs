@@ -20,7 +20,12 @@ public class DonateCommand(ConfigFile config) : PermissionConfigurableCommand(co
         if (args.Length == 0) return false;
         if (!int.TryParse(args[0], out _) || !int.TryParse(args[1], out _))
         {
-            ChatService.SendPrivateChatMessage("Invalid argument(s). Please try again", player);
+            return false;
+        }
+
+        if (int.Parse(args[1]) <= 0)
+        {
+            ChatService.SendPrivateChatMessage("You must donate more than $0m!", player);
             return false;
         }
 
@@ -34,6 +39,7 @@ public class DonateCommand(ConfigFile config) : PermissionConfigurableCommand(co
         if (!PlayerUtils.TryFindPlayerbyID(idx, out Player? targetPlayer))
         {
             ChatService.SendPrivateChatMessage("Could not find player to votekick.", player);
+            return false;
         }
 
         var playerBal = player.Allocation;
