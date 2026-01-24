@@ -13,14 +13,19 @@ public class DonateCommand(ConfigFile config) : PermissionConfigurableCommand(co
 {
     public override string Name { get; } = "donate";
     public override string Description { get; } = "Donate some of your money to somebody";
-    public override string Usage { get; } = $"donate <ID in their name> <Amount in millions>. e.g: '{NucleiConfig.CommandPrefixChar}donate 1 50' donates 50 million";
+    public override string Usage { get; } = "donate <ID in their name> <Amount in millions>. e.g: '/donate 1 50' donates 50 million";
 
     public override bool Validate(Player player, string[] args)
     {
         if (args.Length == 0) return false;
         if (!int.TryParse(args[0], out _) || !int.TryParse(args[1], out _))
         {
-            ChatService.SendPrivateChatMessage("Invalid argument(s). Please try again", player);
+            return false;
+        }
+
+        if (int.Parse(args[1]) <= 0)
+        {
+            ChatService.SendPrivateChatMessage("You must donate more than $0m!", player);
             return false;
         }
 
@@ -34,6 +39,7 @@ public class DonateCommand(ConfigFile config) : PermissionConfigurableCommand(co
         if (!PlayerUtils.TryFindPlayerbyID(idx, out Player? targetPlayer))
         {
             ChatService.SendPrivateChatMessage("Could not find player to votekick.", player);
+            return false;
         }
 
         var playerBal = player.Allocation;
