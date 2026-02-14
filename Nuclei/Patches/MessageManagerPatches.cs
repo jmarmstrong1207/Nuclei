@@ -1,3 +1,4 @@
+using System;
 using HarmonyLib;
 using NuclearOption.Networking;
 using Nuclei.Events;
@@ -14,7 +15,8 @@ internal static class MessageManagerPatches
     [HarmonyPatch(nameof(MessageManager.JoinMessage))]
     private static void JoinMessagePostfix(Player joinedPlayer)
     {
-        Nuclei.Logger?.LogInfo($"{joinedPlayer.PlayerName} joined the game");
+        var now = DateTime.Now.ToString("MM/dd - H:mm:ss");
+        Nuclei.Logger?.LogInfo($"[{now}] {joinedPlayer.PlayerName} (SteamID {joinedPlayer.SteamID}) joined the game");
         ChatService.SendPrivateChatMessage(NucleiConfig.WelcomeMessage!.Value, joinedPlayer);
         
         PlayerEvents.OnPlayerJoined(joinedPlayer);
@@ -24,7 +26,8 @@ internal static class MessageManagerPatches
     [HarmonyPatch(nameof(MessageManager.DisconnectedMessage))]
     private static void DisconnectedMessagePostfix(Player player)
     {
-        Nuclei.Logger?.LogInfo($"{player.PlayerName} left the game");
+        var now = DateTime.Now.ToString("MM/dd - H:mm:ss");
+        Nuclei.Logger?.LogInfo($"[{now}] {player.PlayerName} (SteamID {player.SteamID}) left the game");
         
         PlayerEvents.OnPlayerLeft(player);
     }

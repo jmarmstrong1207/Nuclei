@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using NuclearOption.Chat;
 using NuclearOption.Networking;
 using Nuclei.Helpers;
@@ -73,8 +76,8 @@ public static class ChatService
             Nuclei.Logger?.LogWarning("Cannot send chat message.");
             return;
         }
-        
-        Globals.ChatManagerInstance.RpcServerMessage(actualMessage, false);
+        if (Globals.ChatManagerInstance)
+            Globals.ChatManagerInstance.RpcServerMessage(actualMessage, false);
     }
 
     /// <summary>
@@ -99,9 +102,27 @@ public static class ChatService
     /// <summary>
     ///     Sends the message of the day to all clients.
     /// </summary>
+    private static int i = 0;
+
+    private static List<string> MotdList = [];
+
+    public static void UpdateMotD()
+    {
+        var json = File.ReadAllText("motd.json");
+        var parsedJson = System.Text.Json.Nodes.JsonNode.Parse(json)!;
+
+        MotdList = parsedJson["MotdList"]!.AsArray().GetValues<string>().ToList();
+        
+        Nuclei.Logger?.LogInfo("Updated motd list:");
+        foreach (var motd in MotdList)
+            Nuclei.Logger?.LogInfo(motd);
+
+    }
     public static void SendMotD()
     {
-        var actualMotD = NucleiConfig.MessageOfTheDay!.Value.PreProcessMessage();
+        string actualMotD = MotdList[i++]; 
+        
+        if (i >= MotdList.Count) i = 0;
         
         if (!CanSend(actualMotD, ignoreRateLimit: true))
         {
@@ -109,6 +130,7 @@ public static class ChatService
             return;
         }
 
-        SendChatMessage(actualMotD);
+        if (Globals.ChatManagerInstance)
+            SendChatMessage(actualMotD);
     }
 }

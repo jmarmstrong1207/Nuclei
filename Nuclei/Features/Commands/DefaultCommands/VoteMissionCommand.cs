@@ -64,7 +64,7 @@ public class VoteMissionCommand(ConfigFile config) : PermissionConfigurableComma
             Globals.DedicatedServerManagerInstance.missionRotation.OverrideNext(_fetchedMissions![idx - 1]);
         }
 
-        if (!VoteService.StartVote(player, $"Mission vote for {_fetchedMissions[idx - 1].Key.Name} has been started", Action))
+        if (!VoteService.StartVote(player, $"Vote to queue '{_fetchedMissions[idx - 1].Key.Name}' as next mission has started", Action))
         {
             ChatService.SendPrivateChatMessage("Cannot start a new mission vote, please wait for current vote to expire.", player);
             return false;

@@ -1,4 +1,8 @@
 using System;
+using Nuclei.Features;
+using Nuclei.Features.Commands;
+using Nuclei.Helpers;
+using UnityEngine;
 
 namespace Nuclei.Events;
 
@@ -52,11 +56,19 @@ public static class TimeEvents
     internal static void OnEveryMinute()
     {
         EveryMinute?.Invoke();
+        var currentMissionTime = Time.timeSinceLevelLoad;
+        var maxMissionTime = Globals.DedicatedServerManagerInstance.CurrentMissionOption.MaxTime;
+        if (maxMissionTime > 0 && maxMissionTime - currentMissionTime < 120)
+            ChatService.SendChatMessage($"MISSION ENDING SOON! Remaining mission time: {(maxMissionTime - currentMissionTime)/60} minutes");
     }
 
     internal static void OnEvery10Minutes()
     {
         Every10Minutes?.Invoke();
+        
+        var currentMissionTime = Time.timeSinceLevelLoad;
+        var maxMissionTime = Globals.DedicatedServerManagerInstance.CurrentMissionOption.MaxTime;
+        ChatService.SendChatMessage($"Remaining mission time: {(int)((maxMissionTime - currentMissionTime)/60)} minutes");
     }
 
     internal static void OnEvery30Minutes()

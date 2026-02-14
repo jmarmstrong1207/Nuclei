@@ -1,3 +1,4 @@
+using System;
 using HarmonyLib;
 using Mirage;
 using NuclearOption.Chat;
@@ -23,9 +24,10 @@ internal static class ChatManagerPatches
             if (CommandService.TryExecuteCommand(player!, message.Remove(0, 1)))
                 return false;
 
+        var now = DateTime.Now.ToString("MM/dd - H:mm:ss");
         Nuclei.Logger?.LogInfo(allChat
-            ? $"{player!.PlayerName} sent message: {message}"
-            : $"{player!.PlayerName} sent message in {player.HQ.faction.factionName} chat: {message}");
+            ? $"[{now}] {player!.PlayerName} sent message: {message}"
+            : $"[{now}] {player!.PlayerName} sent message in {player.HQ.faction.factionName} chat: {message}");
 
         return true;
     }

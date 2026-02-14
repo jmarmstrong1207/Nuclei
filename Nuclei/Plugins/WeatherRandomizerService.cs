@@ -24,7 +24,7 @@ using System.Text.Json;
          };
 
          Random rnd = new Random();
-         parsedJson["environment"]!["timeOfDay"] = rnd.Next(3,13);
+         parsedJson["environment"]!["timeOfDay"] = rnd.Next(3,18);
          parsedJson["environment"]!["timeFactor"] = 2.0;
          parsedJson["environment"]!["weatherIntensity"] = rnd.NextDouble() * 0.9;
          parsedJson["environment"]!["cloudAltitude"] = 500 + rnd.NextDouble() * 1000;

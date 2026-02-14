@@ -74,6 +74,12 @@ public class Nuclei : BaseUnityPlugin
         CommandService.RegisterCommand(new VoteMissionCommand(Config));
         CommandService.RegisterCommand(new VoteYesCommand(Config));
         CommandService.RegisterCommand(new VoteNoCommand(Config));
+        CommandService.RegisterCommand(new ReportCommand(Config));
+        CommandService.RegisterCommand(new DonateCommand(Config));
+        CommandService.RegisterCommand(new updateMotdCommand(Config));
+        CommandService.RegisterCommand(new DiscordCommand(Config));
+        ChatService.UpdateMotD();
+        
 
         if (IsPatched)
             Logger?.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
@@ -139,6 +145,7 @@ public class Nuclei : BaseUnityPlugin
 
     private void OnPlayerJoin(Player player)
     {
+        Nuclei.Logger?.LogInfo($"{player.PlayerName} joined the game! SteamID: {player.SteamID}");
         BanService.VerifyNotBanned(player);
         PlayerUtils.ApplyOrRemoveStaffTag(player);
         PlayerUtils.ApplyID(player);

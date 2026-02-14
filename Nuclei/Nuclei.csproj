@@ -36,7 +36,9 @@
         <NoWarn>$(NoWarn);CS0436</NoWarn>
 
         <!-- Mod Destination -->
+        <NUCLEAR_OPTION_SERVER_REFERENCES>$(ProjectDir)..\NuclearOptionServer_Data\Managed</NUCLEAR_OPTION_SERVER_REFERENCES>
         <ModDestination>$(NUCLEAR_OPTION_SERVER_REFERENCES)\..\..\BepInEx\plugins</ModDestination>
+        <UserSecretsId>86e86cf3-6788-454b-9e1b-af51dccdbf5d</UserSecretsId>
     </PropertyGroup>
 
     <!-- Include README and CHANGELOG in the package -->
@@ -52,7 +54,8 @@
         <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all"/>
         <PackageReference Include="BepInEx.Core" Version="5.*"/>
         <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*"/>
-        <PackageReference Include="System.Text.Json" Version="10.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.3" />
+        <PackageReference Include="System.Text.Json" Version="10.0.3" />
     </ItemGroup>
 
     <!-- Nuclear Option-specific Assembly References -->
@@ -76,6 +79,9 @@
     <!-- Extra Package References -->
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all"/>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="siteserverui\js\" />
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' AND '$(ModDestination)' != ''">
