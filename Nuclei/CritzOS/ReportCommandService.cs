@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Specialized;
 using System.Net;
-using Microsoft.Extensions.Configuration;
 
 namespace Nuclei.Features;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -9,8 +9,7 @@ public class ReportCommandService
 {
 
 
-    private static string webhookURL =
-        new ConfigurationBuilder().AddUserSecrets<ReportCommandService>().Build()["webhookURL"];
+    private static string webhookURL = Environment.GetEnvironmentVariable("webhookURL")!;
     public static bool SendDiscordMessage(string username, string message)
     {
         NameValueCollection discordValues = new NameValueCollection();

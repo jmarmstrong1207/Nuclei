@@ -33,7 +33,7 @@ public class Nuclei : BaseUnityPlugin
 
         var unityCtx = SynchronizationContext.Current ?? new SynchronizationContext();
         _console = new ConsoleManager(unityCtx, HandleConsoleCommand);
-        _console.Start();
+        //_console.Start();
         
         Logger?.LogInfo($"Loading {PluginInfo.PLUGIN_NAME} v{PluginInfo.PLUGIN_VERSION}...");
         
@@ -60,7 +60,7 @@ public class Nuclei : BaseUnityPlugin
         SubscribeToEvents();
         
         ChatService.UpdateMotD();
-
+        
         if (IsPatched)
             Logger?.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
         else

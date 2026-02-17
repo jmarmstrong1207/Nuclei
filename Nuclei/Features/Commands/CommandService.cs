@@ -28,6 +28,7 @@ public static class CommandService
     /// <param name="command"> The command to register. </param>
     public static void RegisterCommand(ICommand command)
     {
+        Nuclei.Logger?.LogInfo($"Registering command {command.Name}");
         Commands.Add(command);
     }
 

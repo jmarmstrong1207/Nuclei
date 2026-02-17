@@ -1,5 +1,6 @@
 using System;
 using HarmonyLib;
+using HarmonyLib.Tools;
 using Mirage;
 using NuclearOption.Chat;
 using Nuclei.Features;
@@ -17,6 +18,7 @@ internal static class ChatManagerPatches
     [HarmonyPatch("UserCode_CmdSendChatMessage_\u002D456754112")]
     private static bool UserCode_CmdSendChatMessagePrefix(string message, bool allChat, INetworkPlayer sender)
     {
+        Nuclei.Logger?.LogInfo("SENT MESSAGE!!!!");
         if (!sender.TryGetPlayer(out var player)) 
             Nuclei.Logger?.LogWarning("Player component is null");
 
