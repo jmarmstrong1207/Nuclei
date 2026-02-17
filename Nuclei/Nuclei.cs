@@ -67,8 +67,6 @@ public class Nuclei : BaseUnityPlugin
         CommandService.RegisterCommand(new NextMissionCommand(Config));
         CommandService.RegisterCommand(new BanSteamIDCommand(Config));
         CommandService.RegisterCommand(new ListCommand(Config));
-
-        PlayerEvents.PlayerJoined += OnPlayerJoin;
         CommandService.RegisterCommand(new VoteKickCommand(Config));
         CommandService.RegisterCommand(new VoteSkipCommand(Config));
         CommandService.RegisterCommand(new VoteMissionCommand(Config));
@@ -78,6 +76,7 @@ public class Nuclei : BaseUnityPlugin
         CommandService.RegisterCommand(new DonateCommand(Config));
         CommandService.RegisterCommand(new updateMotdCommand(Config));
         CommandService.RegisterCommand(new DiscordCommand(Config));
+        PlayerEvents.PlayerJoined += OnPlayerJoin;
         ChatService.UpdateMotD();
         
 
