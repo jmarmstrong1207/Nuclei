@@ -59,27 +59,7 @@ public class Nuclei : BaseUnityPlugin
         RegisterCommands();
         SubscribeToEvents();
         
-        CommandService.RegisterCommand(new SayCommand(Config));
-        CommandService.RegisterCommand(new NewMissionCommand(Config));
-        CommandService.RegisterCommand(new KickCommand(Config));
-        CommandService.RegisterCommand(new BanCommand(Config));
-        CommandService.RegisterCommand(new StopCommand(Config));
-        CommandService.RegisterCommand(new SetPermissionLevelCommand(Config));
-        CommandService.RegisterCommand(new HelpCommand(Config));
-        CommandService.RegisterCommand(new NextMissionCommand(Config));
-        CommandService.RegisterCommand(new BanSteamIDCommand(Config));
-        CommandService.RegisterCommand(new ListCommand(Config));
-        CommandService.RegisterCommand(new VoteKickCommand(Config));
-        CommandService.RegisterCommand(new VoteSkipCommand(Config));
-        CommandService.RegisterCommand(new VoteMissionCommand(Config));
-        CommandService.RegisterCommand(new VoteYesCommand(Config));
-        CommandService.RegisterCommand(new VoteNoCommand(Config));
-        CommandService.RegisterCommand(new ReportCommand(Config));
-        CommandService.RegisterCommand(new DonateCommand(Config));
-        CommandService.RegisterCommand(new updateMotdCommand(Config));
-        CommandService.RegisterCommand(new DiscordCommand(Config));
         ChatService.UpdateMotD();
-        
 
         if (IsPatched)
             Logger?.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
@@ -150,6 +130,11 @@ public class Nuclei : BaseUnityPlugin
         CommandService.RegisterCommand(new VoteNoCommand(Config));
         CommandService.RegisterCommand(new VoteSkipCommand(Config));
         CommandService.RegisterCommand(new VoteMissionCommand(Config));
+        
+        CommandService.RegisterCommand(new ReportCommand(Config));
+        CommandService.RegisterCommand(new DonateCommand(Config));
+        CommandService.RegisterCommand(new updateMotdCommand(Config));
+        CommandService.RegisterCommand(new DiscordCommand(Config));
     }
 
     private void SubscribeToEvents()
