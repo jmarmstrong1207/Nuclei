@@ -24,9 +24,9 @@ public static class VoteService
     /// <param name="startingMessage"></param>
     /// <param name="action"></param>
     /// <returns></returns>
-    public static void StartVote(Player initiator, string startingMessage, Action action)
+    public static void StartVote(Player initiator, string startingMessage, Action action, bool thresholdByFullServer = true)
     {
-        _activeVote = new VoteSession(initiator, startingMessage, action);
+        _activeVote = new VoteSession(initiator, startingMessage, action, thresholdByFullServer);
         _activeVote.Start();
     }
 
@@ -58,13 +58,17 @@ public class VoteSession
     private readonly string _startingMessage;
     private int _timeLeft;
     private int _voteThreshold; // don't want threshold changing as players leave or join
+    
+    // If true, vote will pass ONLY IF it reaches threshold.
+    // If false, vote will pass if it reaches threshold OR runs out of time and YES votes is greater than NO votes
+    private readonly bool _thresholdByFullServer; 
 
     // Function to call when vote succeeds
     private Action _action;
     
     private static readonly int DEFAULT_VOTING_WINDOW = NucleiConfig.KickTimeout!.Value; 
 
-    public VoteSession(Player initiator, string startingMessage, Action action)
+    public VoteSession(Player initiator, string startingMessage, Action action, bool thresholdByFullServer = true)
     {
         _initiator = initiator;
         _voteThreshold = VoteThreshold();
@@ -75,6 +79,7 @@ public class VoteSession
         _noVoters = [];
         _startingMessage = startingMessage;
         _action = action;
+        _thresholdByFullServer = thresholdByFullServer;
     }
 
     public void Start()
@@ -145,7 +150,9 @@ public class VoteSession
         
         if (_timeLeft <= 0)
         {
-            FinaliseVote(false);
+            if (_thresholdByFullServer)
+                FinaliseVote(false);
+            else FinaliseVote(_yesVoters.Count > _noVoters.Count);
         }
     }
     

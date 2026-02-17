@@ -60,7 +60,8 @@ public class VoteMissionCommand(ConfigFile config) : PermissionConfigurableComma
             VoteService.StartVote(
                 player,
                 $"Mission vote for {_fetchedMissions[idx - 1].Key.Name} has been started",
-                Action
+                Action,
+                false
             );
         }
         else

@@ -26,7 +26,12 @@ public class VoteSkipCommand(ConfigFile config) : PermissionConfigurableCommand(
     {
         if (VoteService.CanStartVote())
         {
-            VoteService.StartVote(player, "A vote to skip the current mission has been started", Action);
+            VoteService.StartVote(
+                player, 
+                "A vote to skip the current mission has been started", 
+                Action,
+                false
+            );
         }
         else
         {
