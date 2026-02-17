@@ -61,6 +61,7 @@ public class VoteMissionCommand(ConfigFile config) : PermissionConfigurableComma
                 player,
                 $"Mission vote for {_fetchedMissions[idx - 1].Key.Name} has been started",
                 Action,
+                false,
                 false
             );
         }

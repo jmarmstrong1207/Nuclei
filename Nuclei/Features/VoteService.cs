@@ -4,6 +4,7 @@ using System.Timers;
 using HarmonyLib;
 using NuclearOption.Networking;
 using Nuclei.Helpers;
+using UnityEngine;
 
 namespace Nuclei.Features;
 
@@ -24,9 +25,9 @@ public static class VoteService
     /// <param name="startingMessage"></param>
     /// <param name="action"></param>
     /// <returns></returns>
-    public static void StartVote(Player initiator, string startingMessage, Action action, bool thresholdByFullServer = true)
+    public static void StartVote(Player initiator, string startingMessage, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true)
     {
-        _activeVote = new VoteSession(initiator, startingMessage, action, thresholdByFullServer);
+        _activeVote = new VoteSession(initiator, startingMessage, action, cancelIfMissionChanges, thresholdByFullServer);
         _activeVote.Start();
     }
 
@@ -61,14 +62,18 @@ public class VoteSession
     
     // If true, vote will pass ONLY IF it reaches threshold.
     // If false, vote will pass if it reaches threshold OR runs out of time and YES votes is greater than NO votes
-    private readonly bool _thresholdByFullServer; 
+    private readonly bool _thresholdByFullServer;
+
+    private readonly bool _cancelIfMissionChanges;
+
+    private float _previousTimeSinceLevelLoad;
 
     // Function to call when vote succeeds
     private Action _action;
     
     private static readonly int DEFAULT_VOTING_WINDOW = NucleiConfig.KickTimeout!.Value; 
 
-    public VoteSession(Player initiator, string startingMessage, Action action, bool thresholdByFullServer = true)
+    public VoteSession(Player initiator, string startingMessage, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true)
     {
         _initiator = initiator;
         _voteThreshold = VoteThreshold();
@@ -80,6 +85,7 @@ public class VoteSession
         _startingMessage = startingMessage;
         _action = action;
         _thresholdByFullServer = thresholdByFullServer;
+        _cancelIfMissionChanges = cancelIfMissionChanges;
     }
 
     public void Start()
@@ -145,6 +151,13 @@ public class VoteSession
 
         if ((_timeLeft % 10 == 0 && _timeLeft > 0) || _timeLeft < 10) // every ten seconds or below 10 seconds every tick
         {
+            if (_cancelIfMissionChanges)
+            {
+                if (Time.timeSinceLevelLoad < _previousTimeSinceLevelLoad)
+                    FinaliseVote(false);
+                else
+                    _previousTimeSinceLevelLoad = Time.timeSinceLevelLoad;
+            }
             ChatService.SendChatMessage($"Vote ends in {_timeLeft} seconds. Type `{NucleiConfig.CommandPrefixChar}y` to vote YES, '{NucleiConfig.CommandPrefixChar}n' for NO. ({_yesVoters.Count}/{_voteThreshold} YES votes, {_noVoters.Count}/{_voteThreshold} NO votes).");
         }
         

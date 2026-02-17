@@ -53,7 +53,7 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
 
         if (VoteService.CanStartVote())
         {
-            VoteService.StartVote(player, startingMessage, Action);
+            VoteService.StartVote(player, startingMessage, Action, false);
             return true;
         }
         else

@@ -30,6 +30,7 @@ public class VoteSkipCommand(ConfigFile config) : PermissionConfigurableCommand(
                 player, 
                 "A vote to skip the current mission has been started", 
                 Action,
+                true,
                 false
             );
         }
