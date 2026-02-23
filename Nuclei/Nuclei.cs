@@ -144,8 +144,8 @@ public class Nuclei : BaseUnityPlugin
 
     private void OnDestroy()
     {
-        UnpatchSelf();
-        _console?.Stop();
+        //UnpatchSelf();
+        //_console?.Stop();
     }
 
     // TODO: Move these somewhere else?
