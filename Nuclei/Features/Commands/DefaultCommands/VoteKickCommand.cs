@@ -46,8 +46,6 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
 
         void Action()
         {
-            ReportCommandService.SendDiscordMessage(player.PlayerName,
-                $"Successfully votekicked {targetPlayer.PlayerName}");
             Globals.NetworkManagerNuclearOptionInstance.KickPlayerAsync(targetPlayer);
         }
 

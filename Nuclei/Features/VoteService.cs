@@ -182,11 +182,15 @@ public class VoteSession
         
         if (thresholdMet)
         {
+            ReportCommandService.SendDiscordMessage("CritzOS",
+                    $"The vote has passed. ({_yesVoters.Count}/{_voteThreshold} YES votes, {_noVoters.Count}/{_voteThreshold} NO votes)");
             ChatService.SendChatMessage($"The vote has passed!");
             _action();
         }
         else
         {
+            ReportCommandService.SendDiscordMessage("CritzOS",
+                $"The vote has failed. ({_yesVoters.Count}/{_voteThreshold} YES votes, {_noVoters.Count}/{_voteThreshold} NO votes)");
             ChatService.SendChatMessage($"The vote has failed. ({_yesVoters.Count}/{_voteThreshold} YES votes, {_noVoters.Count}/{_voteThreshold} NO votes)");
         }
     }
