@@ -25,7 +25,7 @@ public static class Globals
     /// <summary>
     ///     Gets the instance of the <see cref="ChatManager" /> class.
     /// </summary>
-    public static ChatManager ChatManagerInstance => ChatManager.i ?? throw new NullReferenceException("ChatManager instance is null.");
+    public static ChatManager ChatManagerInstance => ChatManager.i;
 
     /// <summary>
     ///     Gets the instance of the <see cref="AudioMixerVolume" /> class.
