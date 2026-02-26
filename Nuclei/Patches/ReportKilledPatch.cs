@@ -62,8 +62,8 @@ public static class ReportKilledPatch
             if (atkHQ == victimHQ && atkPlayer != victimPlayer) // Teamkill
             {
                 ReportCommandService.SendDiscordMessage("CritzOS",
-                    $"{atkPlayer.PlayerName} teamkilled player {victimPlayer.PlayerName}");
-                Nuclei.Logger?.LogInfo($"{atkPlayer.PlayerName} teamkilled player {victimPlayer.PlayerName}");
+                    $"{atkPlayer.PlayerName} ({atkPlayer.SteamID}) teamkilled player {victimPlayer.PlayerName}");
+                Nuclei.Logger?.LogInfo($"{atkPlayer.PlayerName} ({atkPlayer.SteamID}) teamkilled player {victimPlayer.PlayerName}");
             }
             else
             {
@@ -76,8 +76,8 @@ public static class ReportKilledPatch
         {
             if (victimPlayer == null)
             {
-                ReportCommandService.SendDiscordMessage("CritzOS", $"{atkPlayer.PlayerName} killed friendly AI/Ground unit!");
-                Nuclei.Logger?.LogInfo($"{atkPlayer.PlayerName} killed friendly AI/Ground unit!");
+                ReportCommandService.SendDiscordMessage("CritzOS", $"{atkPlayer.PlayerName} ({atkPlayer.SteamID}) killed friendly AI/Ground unit!");
+                Nuclei.Logger?.LogInfo($"{atkPlayer.PlayerName} ({atkPlayer.SteamID}) killed friendly AI/Ground unit!");
             }
         }
     }
