@@ -27,7 +27,7 @@ public class ReportCommand(ConfigFile config) : PermissionConfigurableCommand(co
     {
         string report = String.Join(" ", args);
         Nuclei.Logger?.LogInfo($"Player {player.PlayerName} reported: {report}.");
-        if (ReportCommandService.SendDiscordMessage( PlayerUtils.StripStaffPrefix(player.PlayerName), report))
+        if (ReportCommandService.SendReport( PlayerUtils.StripStaffPrefix(player.PlayerName), report))
         {
             ChatService.SendPrivateChatMessage("Report has been sent!", player);
         }

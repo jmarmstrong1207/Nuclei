@@ -40,7 +40,7 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
         {
             ChatService.SendPrivateChatMessage("Could not find player to votekick.", player);
         }
-        ReportCommandService.SendDiscordMessage(player.PlayerName,
+        ReportCommandService.SendReport(player.PlayerName,
             $"Started votekick for {targetPlayer!.PlayerName}");
         string startingMessage = $"A vote to kick {targetPlayer!.PlayerName} has been started.";
 

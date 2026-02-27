@@ -62,7 +62,7 @@ public static class ReportKilledPatch
         {
             if (atkHQ == victimHQ && atkPlayer != victimPlayer) // Teamkill
             {
-                ReportCommandService.SendDiscordMessage($"CritzOS {serverName}",
+                ReportCommandService.SendReport($"CritzOS {serverName}",
                     $"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) teamkilled player {victimPlayer.Aircraft.unitName}!");
                 Nuclei.Logger?.LogInfo($"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) teamkilled player {victimPlayer.Aircraft.unitName}!");
             }
@@ -77,7 +77,7 @@ public static class ReportKilledPatch
         {
             if (victimPlayer == null)
             {
-                ReportCommandService.SendDiscordMessage($"CritzOS {serverName}", $"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) killed friendly {victimPU.unitName}!");
+                ReportCommandService.SendReport($"CritzOS {serverName}", $"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) killed friendly {victimPU.unitName}!");
                 Nuclei.Logger?.LogInfo($"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) killed friendly {victimPU.unitName}!");
             }
         }

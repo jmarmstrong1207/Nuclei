@@ -10,7 +10,18 @@ public class ReportCommandService
 
 
     private static string webhookURL = Environment.GetEnvironmentVariable("webhookURL")!;
-    public static bool SendDiscordMessage(string username, string message)
+    private static string chatLogWebhookURL = Environment.GetEnvironmentVariable("chatLogWebhookURL")!;
+    public static bool SendReport(string username, string message)
+    {
+        return SendDiscordMessage(username, message, webhookURL);
+    }
+
+    public static bool LogChatMessage(string username, string message)
+    {
+        return SendDiscordMessage(username, message, chatLogWebhookURL);
+    }
+
+    private static bool SendDiscordMessage(string username, string message, string url)
     {
         NameValueCollection discordValues = new NameValueCollection();
         discordValues.Add("username", username);
@@ -19,7 +30,7 @@ public class ReportCommandService
 
         try
         {
-            new WebClient().UploadValues(webhookURL, discordValues);
+            new WebClient().UploadValues(url, discordValues);
             return true;
         }
         catch (WebException e)
@@ -27,5 +38,6 @@ public class ReportCommandService
             Nuclei.Logger?.LogError(e.Message);
             return false;
         }
-    } 
+        
+    }
 }
