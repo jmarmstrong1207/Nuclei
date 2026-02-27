@@ -16,7 +16,8 @@ public static class ReportKilledPatch
 {
     static readonly FieldInfo f_persistentID = AccessTools.Field(typeof(Unit), "persistentID");
     static readonly FieldInfo f_damageCredit = AccessTools.Field(typeof(Unit), "damageCredit");
-
+    
+    private static string serverName = Environment.GetEnvironmentVariable("serverName")!;
     static void Postfix(object __instance)
     {
         var victimPid = (PersistentID)f_persistentID.GetValue(__instance);
@@ -61,9 +62,9 @@ public static class ReportKilledPatch
         {
             if (atkHQ == victimHQ && atkPlayer != victimPlayer) // Teamkill
             {
-                ReportCommandService.SendDiscordMessage("CritzOS",
-                    $"{atkPlayer.PlayerName} (||{atkPlayer.SteamID}||) teamkilled player {victimPlayer.PlayerName}");
-                Nuclei.Logger?.LogInfo($"{atkPlayer.PlayerName} (||{atkPlayer.SteamID}||) teamkilled player {victimPlayer.PlayerName}");
+                ReportCommandService.SendDiscordMessage($"CritzOS {serverName}",
+                    $"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) teamkilled player {victimPlayer.Aircraft.unitName}!");
+                Nuclei.Logger?.LogInfo($"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) teamkilled player {victimPlayer.Aircraft.unitName}!");
             }
             else
             {
@@ -76,8 +77,8 @@ public static class ReportKilledPatch
         {
             if (victimPlayer == null)
             {
-                ReportCommandService.SendDiscordMessage("CritzOS", $"{atkPlayer.PlayerName} (||{atkPlayer.SteamID}||) killed friendly AI/Ground unit!");
-                Nuclei.Logger?.LogInfo($"{atkPlayer.PlayerName} (||{atkPlayer.SteamID}||) killed friendly AI/Ground unit!");
+                ReportCommandService.SendDiscordMessage($"CritzOS {serverName}", $"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) killed friendly {victimPU.unitName}!");
+                Nuclei.Logger?.LogInfo($"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) killed friendly {victimPU.unitName}!");
             }
         }
     }
