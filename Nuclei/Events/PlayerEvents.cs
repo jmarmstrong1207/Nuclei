@@ -1,5 +1,6 @@
 using System;
 using NuclearOption.Networking;
+using Nuclei.CritzOS;
 using Nuclei.Features;
 
 namespace Nuclei.Events;
@@ -18,6 +19,8 @@ public static class PlayerEvents
     {
         PlayerJoined?.Invoke(e);
         if (NucleiConfig.RankCatchUp!.Value) RankCatchUpService.CatchUpPlayer(e);
+        ReportCommandService.LogChatMessage($"CritzOS {CritzOSGlobals.ServerName}",
+            $"`{e.PlayerName} ({e.SteamID}) joined the game`");
     }
 
     /// <summary>
@@ -28,5 +31,7 @@ public static class PlayerEvents
     internal static void OnPlayerLeft(Player e)
     {
         PlayerLeft?.Invoke(e);
+        ReportCommandService.LogChatMessage($"CritzOS {CritzOSGlobals.ServerName}",
+            $"`{e.PlayerName} ({e.SteamID}) left the game`");
     }
 }

@@ -9,8 +9,8 @@ public class ReportCommandService
 {
 
 
-    private static string webhookURL = Environment.GetEnvironmentVariable("webhookURL")!;
-    private static string chatLogWebhookURL = Environment.GetEnvironmentVariable("chatLogWebhookURL")!;
+    internal static string webhookURL = Environment.GetEnvironmentVariable("webhookURL")!;
+    internal static string chatLogWebhookURL = Environment.GetEnvironmentVariable("chatLogWebhookURL")!;
     public static bool SendReport(string username, string message)
     {
         return SendDiscordMessage(username, message, webhookURL);
