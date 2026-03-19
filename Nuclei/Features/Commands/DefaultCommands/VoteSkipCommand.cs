@@ -29,7 +29,7 @@ public class VoteSkipCommand(ConfigFile config) : PermissionConfigurableCommand(
             VoteService.StartVote(
                 player, 
                 "A vote to skip the current mission has been started", 
-                Action,
+                () => MissionService.StartNextMission(player),
                 true,
                 false
             );
@@ -40,11 +40,6 @@ public class VoteSkipCommand(ConfigFile config) : PermissionConfigurableCommand(
             return false;
         }
         return true;
-
-        void Action()
-        {
-            MissionService.StartNextMission(player);
-        }
     }
 
     public override bool Execute(string[] args)
