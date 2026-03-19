@@ -49,7 +49,7 @@ public class VoteMissionCommand(ConfigFile config) : PermissionConfigurableComma
 
         var idx = int.Parse(args[0]);
 
-        if (idx > _fetchedMissions.Count)
+        if (idx > _fetchedMissions.Count || idx < 1)
         {
             ChatService.SendPrivateChatMessage("Number invalid. Please Try again.", player);
             return false;
@@ -60,7 +60,7 @@ public class VoteMissionCommand(ConfigFile config) : PermissionConfigurableComma
             VoteService.StartVote(
                 player,
                 $"Mission vote for {_fetchedMissions[idx - 1].Key.Name} has been started",
-                Action,
+                () => Globals.DedicatedServerManagerInstance.missionRotation.OverrideNext(_fetchedMissions![idx - 1]),
                 false,
                 false
             );
@@ -72,11 +72,6 @@ public class VoteMissionCommand(ConfigFile config) : PermissionConfigurableComma
         }
         _fetchedMissions = null;
         return true;
-
-        void Action()
-        {
-            Globals.DedicatedServerManagerInstance.missionRotation.OverrideNext(_fetchedMissions![idx - 1]);
-        }
     }
 
     public override bool Execute(string[] args)
