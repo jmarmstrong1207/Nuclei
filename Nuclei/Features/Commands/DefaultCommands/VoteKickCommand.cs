@@ -5,6 +5,7 @@ using System.Text;
 using BepInEx.Configuration;
 using Mirage;
 using NuclearOption.Networking;
+using Nuclei.CritzOS;
 using Nuclei.Enums;
 using Nuclei.Helpers;
 
@@ -40,18 +41,22 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
         {
             ChatService.SendPrivateChatMessage("Could not find player to votekick.", player);
         }
-        ReportCommandService.SendReport(player.PlayerName,
-            $"Started votekick for {targetPlayer!.PlayerName}");
-        string startingMessage = $"A vote to kick {targetPlayer!.PlayerName} has been started.";
 
-        void Action()
+        Action a = () =>
         {
+            ReportCommandService.SendReport($"{player.PlayerName} ({CritzOSGlobals.ServerName}",
+                $"Votekick for {targetPlayer!.PlayerName} has passed");
             Globals.NetworkManagerNuclearOptionInstance.KickPlayerAsync(targetPlayer);
-        }
+        };
 
         if (VoteService.CanStartVote())
         {
-            VoteService.StartVote(player, startingMessage, Action, false);
+            string startingMessage = $"A vote to kick {targetPlayer!.PlayerName} has been started.";
+            ReportCommandService.SendReport($"{player.PlayerName} ({CritzOSGlobals.ServerName}",
+                startingMessage);
+            ChatService.SendChatMessage(startingMessage);
+            
+            VoteService.StartVote(player, a, false);
             return true;
         }
         else

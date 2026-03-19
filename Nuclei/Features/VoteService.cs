@@ -25,9 +25,9 @@ public static class VoteService
     /// <param name="startingMessage"></param>
     /// <param name="action"></param>
     /// <returns></returns>
-    public static void StartVote(Player initiator, string startingMessage, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true)
+    public static void StartVote(Player initiator, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true)
     {
-        _activeVote = new VoteSession(initiator, startingMessage, action, cancelIfMissionChanges, thresholdByFullServer);
+        _activeVote = new VoteSession(initiator, action, cancelIfMissionChanges, thresholdByFullServer);
         _activeVote.Start();
     }
 
@@ -73,7 +73,7 @@ public class VoteSession
     
     private static readonly int DEFAULT_VOTING_WINDOW = NucleiConfig.KickTimeout!.Value; 
 
-    public VoteSession(Player initiator, string startingMessage, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true)
+    public VoteSession(Player initiator, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true)
     {
         _initiator = initiator;
         _voteThreshold = VoteThreshold();
@@ -82,7 +82,6 @@ public class VoteSession
         _timer.Elapsed += OnTimerTick;
         _yesVoters = [];
         _noVoters = [];
-        _startingMessage = startingMessage;
         _action = action;
         _thresholdByFullServer = thresholdByFullServer;
         _cancelIfMissionChanges = cancelIfMissionChanges;
@@ -90,7 +89,6 @@ public class VoteSession
 
     public void Start()
     {
-        ChatService.SendChatMessage(_startingMessage);
         ChatService.SendChatMessage($"Type '{NucleiConfig.CommandPrefixChar}y' to vote yes, '{NucleiConfig.CommandPrefixChar}n' to vote no. You have {_timeLeft} seconds to cast your vote. ({_yesVoters.Count}/{_voteThreshold} YES votes, {_noVoters.Count}/{_voteThreshold} NO votes).");
         _timer.Start();
         AddVote(_initiator, true);

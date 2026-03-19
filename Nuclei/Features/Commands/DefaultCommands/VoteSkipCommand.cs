@@ -24,12 +24,22 @@ public class VoteSkipCommand(ConfigFile config) : PermissionConfigurableCommand(
 
     public override bool Execute(Player player, string[] args)
     {
+        Action a = () =>
+        {
+            ReportCommandService.LogChatMessage($"{player.PlayerName}", "Voteskip has passed");
+            
+            MissionService.StartNextMission(player);
+        };
         if (VoteService.CanStartVote())
         {
+            var startingMessage = "A vote to skip the current mission has been started";
+            ReportCommandService.LogChatMessage($"{player.PlayerName}",
+                startingMessage);
+            ChatService.SendChatMessage(startingMessage);
+            
             VoteService.StartVote(
                 player, 
-                "A vote to skip the current mission has been started", 
-                () => MissionService.StartNextMission(player),
+                a,
                 true,
                 false
             );

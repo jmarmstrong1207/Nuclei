@@ -55,12 +55,25 @@ public class VoteMissionCommand(ConfigFile config) : PermissionConfigurableComma
             return false;
         }
 
+        Action a = () =>
+        {
+            var m = $"Mission vote for {_fetchedMissions[idx - 1].Key.Name} has passed";
+            ReportCommandService.LogChatMessage($"{player.PlayerName}",
+                m);
+            
+            Globals.DedicatedServerManagerInstance.missionRotation.OverrideNext(_fetchedMissions![idx - 1]);
+        };
+        
         if (VoteService.CanStartVote())
         {
+
+            var startingMessage = $"Mission vote for {_fetchedMissions[idx - 1].Key.Name} has been started";
+            ReportCommandService.LogChatMessage($"{player.PlayerName}",
+                startingMessage);
+            ChatService.SendChatMessage(startingMessage);
             VoteService.StartVote(
                 player,
-                $"Mission vote for {_fetchedMissions[idx - 1].Key.Name} has been started",
-                () => Globals.DedicatedServerManagerInstance.missionRotation.OverrideNext(_fetchedMissions![idx - 1]),
+                a,
                 false,
                 false
             );
