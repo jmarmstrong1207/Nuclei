@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace Nuclei.Features;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -26,7 +27,7 @@ public class ReportCommandService
         NameValueCollection discordValues = new NameValueCollection();
         discordValues.Add("username", username);
         //discordValues.Add("avatar_url", profilepic);
-        discordValues.Add("content", message);
+        discordValues.Add("content", Regex.Replace("@everyone test", @"@everyone", "everyone"));
 
         try
         {
