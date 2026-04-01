@@ -1,13 +1,10 @@
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Nuclei.Features;
+using Nuclei.CritzOS.Features;
 
-namespace Nuclei.Patches;
+namespace Nuclei.CritzOS.Patches;
 
 [HarmonyPatch(typeof(Unit), nameof(Unit.ReportKilled))]
 [HarmonyPriority(Priority.First)]
@@ -64,6 +61,7 @@ public static class ReportKilledPatch
             {
                 ReportCommandService.SendReport($"CritzOS {serverName}",
                     $"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) teamkilled player {victimPlayer.Aircraft.unitName}!");
+                CritzOSDB.logPlayerTeamkill(atkPlayer, victimPlayer);
                 Nuclei.Logger?.LogInfo($"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) teamkilled player {victimPlayer.Aircraft.unitName}!");
             }
             else
@@ -78,6 +76,7 @@ public static class ReportKilledPatch
             if (victimPlayer == null)
             {
                 ReportCommandService.SendReport($"CritzOS {serverName}", $"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) killed friendly {victimPU.unitName}!");
+                CritzOSDB.logAITeamkill(atkPlayer, victimPU);
                 Nuclei.Logger?.LogInfo($"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) killed friendly {victimPU.unitName}!");
             }
         }

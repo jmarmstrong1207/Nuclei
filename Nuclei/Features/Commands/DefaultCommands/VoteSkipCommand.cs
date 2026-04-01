@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BepInEx.Configuration;
 using NuclearOption.DedicatedServer;
 using NuclearOption.Networking;
+using Nuclei.CritzOS.Features;
 using Nuclei.Enums;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member

@@ -5,6 +5,7 @@ using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using NuclearOption.Networking;
+using Nuclei.CritzOS.Features.Commands;
 using Nuclei.Events;
 using Nuclei.Features;
 using Nuclei.Features.Commands;
@@ -123,7 +124,6 @@ public class Nuclei : BaseUnityPlugin
         CommandService.RegisterCommand(new SetPermissionLevelCommand(Config));
         CommandService.RegisterCommand(new HelpCommand(Config));
         CommandService.RegisterCommand(new NextMissionCommand(Config));
-        CommandService.RegisterCommand(new BanSteamIDCommand(Config));
         CommandService.RegisterCommand(new ListCommand(Config));
         CommandService.RegisterCommand(new VoteKickCommand(Config));
         CommandService.RegisterCommand(new VoteYesCommand(Config));

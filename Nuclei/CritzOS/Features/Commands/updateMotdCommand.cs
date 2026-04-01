@@ -2,10 +2,11 @@ using System;
 using BepInEx.Configuration;
 using NuclearOption.Networking;
 using Nuclei.Enums;
-using Nuclei.Helpers;
+using Nuclei.Features;
+using Nuclei.Features.Commands;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-namespace Nuclei.Features.Commands;
+namespace Nuclei.CritzOS.Features.Commands;
 
 /// <summary>
 ///     Command to ban a player from the server.

@@ -3,6 +3,7 @@ using HarmonyLib;
 using HarmonyLib.Tools;
 using Mirage;
 using NuclearOption.Chat;
+using Nuclei.CritzOS.Features;
 using Nuclei.Features;
 using Nuclei.Features.Commands;
 using Nuclei.Helpers;

@@ -1,6 +1,7 @@
 using System;
 using NuclearOption.Networking;
 using Nuclei.CritzOS;
+using Nuclei.CritzOS.Features;
 using Nuclei.Features;
 
 namespace Nuclei.Events;
