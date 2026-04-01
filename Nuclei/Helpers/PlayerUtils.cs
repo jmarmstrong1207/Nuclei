@@ -72,7 +72,7 @@ public static class PlayerUtils
         playerObject.PlayerName = newName;
     }
 
-    private static int ID = 1;
+    internal static int ID = 1;
     public static void ApplyID(Player player)
     {
         var newName = $"[{ID++}] {player.PlayerName}";

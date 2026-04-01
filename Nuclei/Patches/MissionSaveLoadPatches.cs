@@ -2,6 +2,7 @@ using System;
 using HarmonyLib;
 using NuclearOption.SavedMission;
 using Nuclei.Features;
+using Nuclei.Helpers;
 
 [HarmonyPriority(Priority.First)]
 [HarmonyWrapSafe]
@@ -17,7 +18,8 @@ public class MissionSaveLoadPatches
         ref bool __result)
     {
         if (!__result || mission == null) return;
-        
+
+        PlayerUtils.ID = 1;
         RandomizeWeather(ref mission);
         ModifyDifficulty(ref mission);
     }
@@ -42,7 +44,7 @@ public class MissionSaveLoadPatches
         mission.environment.weatherIntensity = (float)(rnd.NextDouble() * 0.9);
         mission.environment.cloudAltitude = (float)(500 + rnd.NextDouble() * 1000);
         mission.environment.windSpeed = (float)(rnd.NextDouble() * 4);
-        mission.environment.windTurbulence = (float)rnd.NextDouble();
+        mission.environment.windTurbulence = (float)(rnd.NextDouble()* 0.8);
         mission.environment.windHeading = rnd.Next(0, 360);
     }
 }
