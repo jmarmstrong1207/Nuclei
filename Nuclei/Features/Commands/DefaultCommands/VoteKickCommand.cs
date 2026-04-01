@@ -6,6 +6,7 @@ using BepInEx.Configuration;
 using Mirage;
 using NuclearOption.Networking;
 using Nuclei.CritzOS;
+using Nuclei.CritzOS.Features;
 using Nuclei.Enums;
 using Nuclei.Helpers;
 
@@ -56,7 +57,7 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
                 startingMessage);
             ChatService.SendChatMessage(startingMessage);
             
-            VoteService.StartVote(player, a, false);
+            VoteService.StartVote(player, a, false, false);
             return true;
         }
         else
