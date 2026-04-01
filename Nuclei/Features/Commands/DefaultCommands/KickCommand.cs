@@ -1,6 +1,7 @@
 using System;
 using BepInEx.Configuration;
 using Cysharp.Threading.Tasks;
+using NuclearOption.DedicatedServer.Commands;
 using NuclearOption.Networking;
 using Nuclei.Enums;
 using Nuclei.Helpers;
@@ -26,21 +27,32 @@ public class KickCommand(ConfigFile config) : PermissionConfigurableCommand(conf
     {
         var target = args[0];
 
-        if (PlayerUtils.TryFindPlayer(target, out var targetPlayer))
+        int idx = int.Parse(args[0]);
+        if (!PlayerUtils.TryFindPlayerbyID(idx, out Player? targetPlayer))
         {
-            if (targetPlayer == player)
-            {
-                ChatService.SendPrivateChatMessage("You can't kick yourself.", player);
-                return false;
-            }
-
-            _ = Globals.NetworkManagerNuclearOptionInstance.KickPlayerAsync(targetPlayer);
-            Nuclei.Logger?.LogInfo($"Player {target} kicked from the server.");
-            return true;
+            ChatService.SendPrivateChatMessage("Could not find player to votekick.", player);
+            Nuclei.Logger?.LogWarning($"Ban command run. Player [{target}] not found.");
         }
 
-        ChatService.SendPrivateChatMessage($"Player {target} not found.", player);
-        Nuclei.Logger?.LogWarning($"Player {target} not found.");
+        CommandMessage msg = new CommandMessage();
+        msg.name = "kick-player";
+        msg.arguments = new string[]
+        {
+            Convert.ToString(targetPlayer.SteamID)
+        };
+
+        if (ServerRemoteCommands.Instance.FindAndRunCommand(msg).StatusCode == StatusCode.Success)
+        {
+            ChatService.SendPrivateChatMessage($"Player {targetPlayer.PlayerName} has been kicked", player);
+            Nuclei.Logger?.LogInfo($"Player {targetPlayer.PlayerName} has been kicked");
+            return true;
+        }
+        else
+        {
+            ChatService.SendPrivateChatMessage($"An error has occured while attempting to kick. Report this to the server owner", player);
+            Nuclei.Logger?.LogError($"An error has occured while attempting to kick. Report this to the server owner");
+        }
+
         return false;
     }
     
