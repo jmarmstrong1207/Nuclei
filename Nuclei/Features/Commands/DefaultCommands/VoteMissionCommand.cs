@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BepInEx.Configuration;
 using NuclearOption.DedicatedServer;
 using NuclearOption.Networking;
+using Nuclei.CritzOS.Features;
 using Nuclei.Enums;
 using Nuclei.Helpers;
 
@@ -61,7 +62,7 @@ public class VoteMissionCommand(ConfigFile config) : PermissionConfigurableComma
             ReportCommandService.LogChatMessage($"{player.PlayerName}",
                 m);
             
-            Globals.DedicatedServerManagerInstance.missionRotation.OverrideNext(_fetchedMissions![idx - 1]);
+            MissionService.SetNextMission(_fetchedMissions![idx - 1]);
         };
         
         if (VoteService.CanStartVote())

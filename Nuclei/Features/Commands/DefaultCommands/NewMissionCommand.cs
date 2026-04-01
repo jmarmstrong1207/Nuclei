@@ -15,8 +15,8 @@ namespace Nuclei.Features.Commands.DefaultCommands;
 public class NewMissionCommand(ConfigFile config) : PermissionConfigurableCommand(config)
 {
     public override string Name { get; } = "newmission";
-    public override string Description { get; } = "Ends the current mission and starts a new one.";
-    public override string Usage { get; } = "newmission";
+    public override string Description { get; } = "Choose the next mission (same as votemission)";
+    public override string Usage { get; } = "newmission <mission ID>";
     public override bool Validate(Player player, string[] args)
     {
         return true;

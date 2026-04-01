@@ -171,6 +171,15 @@ public static class MissionService
     }
 
     /// <summary>
+    ///     Select the next mission on the server.
+    /// </summary>
+    /// <param name="option"> The mission to start. </param>
+    public static void SetNextMission(MissionOptions option)
+    {
+        Globals.DedicatedServerManagerInstance.SetNextMission(option);
+    }
+
+    /// <summary>
     ///     Validates that the configured missions actually exist.
     /// </summary>
     public static bool ValidateMissionConfig()
