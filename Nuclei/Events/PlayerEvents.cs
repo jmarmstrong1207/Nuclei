@@ -2,7 +2,6 @@ using System;
 using NuclearOption.Networking;
 using Nuclei.CritzOS;
 using Nuclei.CritzOS.Features;
-using Nuclei.Features;
 
 namespace Nuclei.Events;
 
@@ -19,9 +18,6 @@ public static class PlayerEvents
     internal static void OnPlayerJoined(Player e)
     {
         PlayerJoined?.Invoke(e);
-        if (NucleiConfig.RankCatchUp!.Value) RankCatchUpService.CatchUpPlayer(e);
-        ReportCommandService.LogChatMessage($"CritzOS {CritzOSGlobals.ServerName}",
-            $"`{e.PlayerName} ({e.SteamID}) joined the game`");
     }
 
     /// <summary>

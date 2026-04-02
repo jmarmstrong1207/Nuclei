@@ -5,6 +5,8 @@ using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using NuclearOption.Networking;
+using Nuclei.CritzOS;
+using Nuclei.CritzOS.Features;
 using Nuclei.CritzOS.Features.Commands;
 using Nuclei.Events;
 using Nuclei.Features;
@@ -164,5 +166,10 @@ public class Nuclei : BaseUnityPlugin
         BanService.VerifyNotBanned(player);
         PlayerUtils.ApplyOrRemoveStaffTag(player);
         PlayerUtils.ApplyID(player);
+        
+        // CRITZOS-SPECIFIC STUFF
+        if (NucleiConfig.RankCatchUp!.Value) RankCatchUpService.CatchUpPlayer(player);
+        ReportCommandService.LogChatMessage($"CritzOS {CritzOSGlobals.ServerName}",
+            $"`{player.PlayerName} ({player.SteamID}) joined the game`");
     }
 }
