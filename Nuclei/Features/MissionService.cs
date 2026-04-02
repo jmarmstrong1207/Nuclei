@@ -279,4 +279,9 @@ public static class MissionService
             if (player != null) Nuclei.Logger?.LogError("Unexpected error while loading mission.");
         }
     }
+
+    public static List<MissionOptions> GetAllMissions()
+    {
+        return Globals.DedicatedServerManagerInstance.missionRotation.allMissions;
+    }
 }

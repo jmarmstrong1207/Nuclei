@@ -34,7 +34,7 @@ public class VoteMissionCommand(ConfigFile config) : PermissionConfigurableComma
     {
         if (args.Length == 0)
         {
-            _fetchedMissions = Globals.DedicatedServerManagerInstance.missionRotation.allMissions;
+            _fetchedMissions = MissionService.GetAllMissions();
 
             ChatService.SendPrivateChatMessage($"Choose from the following missions ({NucleiConfig.CommandPrefixChar}votemission <number>):", player);
             // Get missions
@@ -67,7 +67,6 @@ public class VoteMissionCommand(ConfigFile config) : PermissionConfigurableComma
         
         if (VoteService.CanStartVote())
         {
-
             var startingMessage = $"Mission vote for {_fetchedMissions[idx - 1].Key.Name} has been started";
             ReportCommandService.LogChatMessage($"{player.PlayerName}",
                 startingMessage);
