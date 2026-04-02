@@ -122,11 +122,9 @@ public class Nuclei : BaseUnityPlugin
         CommandService.RegisterCommand(new NewMissionCommand(Config));
         CommandService.RegisterCommand(new KickCommand(Config));
         CommandService.RegisterCommand(new BanCommand(Config));
-        CommandService.RegisterCommand(new StopCommand(Config));
         CommandService.RegisterCommand(new SetPermissionLevelCommand(Config));
         CommandService.RegisterCommand(new HelpCommand(Config));
         CommandService.RegisterCommand(new NextMissionCommand(Config));
-        CommandService.RegisterCommand(new ListCommand(Config));
         CommandService.RegisterCommand(new VoteKickCommand(Config));
         CommandService.RegisterCommand(new VoteYesCommand(Config));
         CommandService.RegisterCommand(new VoteNoCommand(Config));
