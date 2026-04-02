@@ -21,6 +21,11 @@ internal class CritzOSDB
             new NpgsqlConnection(CritzOSGlobals.connectionString);
         connection.Open();
     }
+
+    public static void LogChat(Player player, string message)
+    {
+        connection.Query($"INSERT INTO chat_log (steamid, message, server_name) VALUES ({player.SteamID}, '{message}', '{CritzOSGlobals.ServerName}');");
+    }
     
     public static bool DetermineKick(Player player)
     {
