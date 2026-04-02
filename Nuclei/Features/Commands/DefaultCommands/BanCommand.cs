@@ -34,25 +34,13 @@ public class BanCommand(ConfigFile config) : PermissionConfigurableCommand(confi
         }
 
         var reason = $"Player: {targetPlayer.PlayerName}, " + String.Join(" ", args).Substring(1);
-        CommandMessage msg = new CommandMessage();
-        msg.name = "banlist-add";
-        msg.arguments = new string[]
-        {
-            Convert.ToString(targetPlayer.SteamID), reason
-        };
-
-        if (ServerRemoteCommands.Instance.FindAndRunCommand(msg).StatusCode == StatusCode.Success)
+        if (PlayerUtils.BanPlayer(targetPlayer, reason))
         {
             ChatService.SendPrivateChatMessage($"Player {targetPlayer.PlayerName} has been banned", player);
-            Nuclei.Logger?.LogInfo($"Player {targetPlayer.PlayerName} has been banned");
             return true;
         }
-        else
-        {
-            ChatService.SendPrivateChatMessage($"An error has occured while attempting to ban. Report this to the server owner", player);
-            Nuclei.Logger?.LogError($"An error has occured while attempting to ban. Report this to the server owner");
-        }
 
+        ChatService.SendPrivateChatMessage($"An error has occured while attempting to ban. Report this to the server owner", player);
         return false;
     }
 

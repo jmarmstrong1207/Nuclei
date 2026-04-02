@@ -14,7 +14,6 @@ public static class ReportKilledPatch
     static readonly FieldInfo f_persistentID = AccessTools.Field(typeof(Unit), "persistentID");
     static readonly FieldInfo f_damageCredit = AccessTools.Field(typeof(Unit), "damageCredit");
     
-    private static string serverName = Environment.GetEnvironmentVariable("serverName")!;
     static void Postfix(object __instance)
     {
         var victimPid = (PersistentID)f_persistentID.GetValue(__instance);
@@ -59,7 +58,7 @@ public static class ReportKilledPatch
         {
             if (atkHQ == victimHQ && atkPlayer != victimPlayer) // Teamkill
             {
-                ReportCommandService.SendReport($"CritzOS {serverName}",
+                ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}",
                     $"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) teamkilled player {victimPlayer.Aircraft.unitName}!");
                 CritzOSDB.logPlayerTeamkill(atkPlayer, victimPlayer);
                 Nuclei.Logger?.LogInfo($"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) teamkilled player {victimPlayer.Aircraft.unitName}!");
@@ -75,7 +74,7 @@ public static class ReportKilledPatch
         {
             if (victimPlayer == null)
             {
-                ReportCommandService.SendReport($"CritzOS {serverName}", $"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) killed friendly {victimPU.unitName}!");
+                ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}", $"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) killed friendly {victimPU.unitName}!");
                 CritzOSDB.logAITeamkill(atkPlayer, victimPU);
                 Nuclei.Logger?.LogInfo($"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) killed friendly {victimPU.unitName}!");
             }

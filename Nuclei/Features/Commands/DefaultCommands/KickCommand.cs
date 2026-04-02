@@ -62,7 +62,7 @@ public class KickCommand(ConfigFile config) : PermissionConfigurableCommand(conf
 
         if (PlayerUtils.TryFindPlayer(target, out var targetPlayer))
         {
-            _ = Globals.NetworkManagerNuclearOptionInstance.KickPlayerAsync(targetPlayer);
+            PlayerUtils.KickPlayer(targetPlayer);
             Nuclei.Logger?.LogInfo($"Player {target} was kicked from the server.");
             ChatService.SendChatMessage($"Player {target} was kicked from the server.");
             return true;

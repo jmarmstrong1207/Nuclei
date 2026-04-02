@@ -48,7 +48,7 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
             ReportCommandService.SendReport($"{player.PlayerName} ({CritzOSGlobals.ServerName}",
                 $"Votekick for {targetPlayer!.PlayerName} has passed");
             CritzOSDB.LogVoteKick(targetPlayer, player);
-            Globals.NetworkManagerNuclearOptionInstance.KickPlayerAsync(targetPlayer);
+            PlayerUtils.KickPlayer(targetPlayer);
         };
 
         if (VoteService.CanStartVote())

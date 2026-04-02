@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Mirage;
+using NuclearOption.DedicatedServer.Commands;
 using NuclearOption.Networking;
 using Nuclei.Features;
 
@@ -13,6 +14,39 @@ namespace Nuclei.Helpers;
 /// </summary>
 public static class PlayerUtils
 {
+
+    public static bool KickPlayer(Player player)
+    {
+        try
+        {
+            Globals.NetworkManagerNuclearOptionInstance.KickPlayerAsync(player);
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+    public static bool BanPlayer(Player targetPlayer, string reason)
+    {
+        CommandMessage msg = new CommandMessage();
+        msg.name = "banlist-add";
+        msg.arguments = new string[]
+        {
+            Convert.ToString(targetPlayer.SteamID), reason
+        };
+
+        if (ServerRemoteCommands.Instance.FindAndRunCommand(msg).StatusCode == StatusCode.Success)
+        {
+            Nuclei.Logger?.LogInfo($"Player {targetPlayer.PlayerName} has been banned");
+            return true;
+        }
+        else
+        {
+            Nuclei.Logger?.LogError($"An error has occured while attempting to ban. Report this to the server owner");
+            return false;
+        }
+    }
 
     /// <summary>
     ///     Get the Player object from an INetworkPlayer object, if available.
@@ -102,4 +136,5 @@ public static class PlayerUtils
         player = l[0];
         return true;
     }
+
 }
