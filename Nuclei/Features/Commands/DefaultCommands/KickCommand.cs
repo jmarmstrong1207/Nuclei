@@ -3,6 +3,7 @@ using BepInEx.Configuration;
 using Cysharp.Threading.Tasks;
 using NuclearOption.DedicatedServer.Commands;
 using NuclearOption.Networking;
+using Nuclei.CritzOS.Features;
 using Nuclei.Enums;
 using Nuclei.Helpers;
 
@@ -44,6 +45,7 @@ public class KickCommand(ConfigFile config) : PermissionConfigurableCommand(conf
         if (ServerRemoteCommands.Instance.FindAndRunCommand(msg).StatusCode == StatusCode.Success)
         {
             ChatService.SendPrivateChatMessage($"Player {targetPlayer.PlayerName} has been kicked", player);
+            CritzOSDB.LogKick(targetPlayer);
             Nuclei.Logger?.LogInfo($"Player {targetPlayer.PlayerName} has been kicked");
             return true;
         }

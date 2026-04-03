@@ -27,18 +27,24 @@ internal class CritzOSDB
     {
         connection.Query($"INSERT INTO chat_log (steamid, message, server_name) VALUES ({player.SteamID}, '{message}', '{CritzOSGlobals.ServerName}');");
     }
+
+    // Logs manual kicks
+    public static void LogKick(Player player)
+    {
+        connection.Query($"INSERT INTO kick_log (steamid) VALUES ({player.SteamID});");
+    }
     
     public static bool DetermineKick(Player player)
     {
-        var minTime = DateTime.SpecifyKind(DateTime.Now.AddDays(-1), DateTimeKind.Utc).ToString("yyyy-MM-dd");
+        var minTime = DateTime.SpecifyKind(DateTime.Now.AddHours(-1), DateTimeKind.Utc).ToString("yyyy-MM-dd");
         var teamkill_log_query = connection
             .Query($"SELECT * FROM teamkill_log WHERE steamid = {player.SteamID} AND time >= '{minTime}';").AsList();
 
         var teamkill_ai_log_query = connection
             .Query($"SELECT * FROM teamkill_ai_log WHERE steamid = {player.SteamID} AND time >= '{minTime}';").AsList();
 
-        if (teamkill_log_query.Count >= 3 ||
-            teamkill_ai_log_query.Count >= 15)
+        if (teamkill_log_query.Count >= 4 ||
+            teamkill_ai_log_query.Count >= 20)
         {
             CommandMessage msg = new CommandMessage();
             msg.name = "kick-player";
@@ -50,20 +56,35 @@ internal class CritzOSDB
             if (ServerRemoteCommands.Instance.FindAndRunCommand(msg).StatusCode == StatusCode.Success)
             {
                 ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}", $"Player {player.PlayerName} has been autokicked");
-                connection.Query($"INSERT INTO kick_log (steamid) VALUES ({player.SteamID});");
+                LogKick(player);
+                return true;
             }
         }
 
         return false;
     }
 
-    // Determines to ban based on # of kicks at a given time
-    public static bool DetermineBan(Player player)
+    
+    // Review based on # of kicks within a span of time
+    public static bool IsMarkedForReview(Player player)
     {
         var minTime = DateTime.SpecifyKind(DateTime.Now.AddDays(-14), DateTimeKind.Utc).ToString("yyyy-MM-dd");
-        
         var kick_log_query = connection.Query($"SELECT * FROM kick_log WHERE steamid = {player.SteamID} AND time >= '{minTime}';").AsList();
-        
+
+        if (kick_log_query.Count >= 3)
+        {
+            ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}",
+                $"@Staff Player {player.PlayerName} (||{player.SteamID}||) has been been marked for review");
+            return true;
+        }
+
+        return false;
+
+        // Original code to instead outright ban 
+        /*
+        var minTime = DateTime.SpecifyKind(DateTime.Now.AddDays(-14), DateTimeKind.Utc).ToString("yyyy-MM-dd");
+        var kick_log_query = connection.Query($"SELECT * FROM kick_log WHERE steamid = {player.SteamID} AND time >= '{minTime}';").AsList();
+
         //var votekick_query = connection.Query($"SELECT * FROM votekick_log WHERE time >= {minTime}").AsList();
 
         if (kick_log_query.Count >= 3)
@@ -84,6 +105,7 @@ internal class CritzOSDB
         }
 
         return false;
+        */
     }
 
     public static void AddPlayer(ulong steamid, string username)
@@ -111,10 +133,10 @@ internal class CritzOSDB
         AddPlayer(atkPlayer.SteamID, atkPlayer.PlayerName);
         AddPlayer(victimPlayer.SteamID, victimPlayer.PlayerName);
         
-        connection.Query($"INSERT INTO teamkill_log (steamid, steamidofplayerkilled) VALUES ({atkPlayer.SteamID}, {victimPlayer.SteamID});").AsList();
-        
+        connection.Query($"INSERT INTO teamkill_log (steamid, steamidofplayerkilled, attacker_aircraft_type, victim_aircraft_type) VALUES ({atkPlayer.SteamID}, {victimPlayer.SteamID}, '{atkPlayer.Aircraft.unitName}', '{victimPlayer.Aircraft.UniqueName}');").AsList();
+
         DetermineKick(atkPlayer);
-        DetermineBan(atkPlayer);
+        IsMarkedForReview(atkPlayer);
 
     }
     
@@ -123,10 +145,10 @@ internal class CritzOSDB
         ChatService.SendPrivateChatMessage($"WARNING: TEAMKILLING WILL RESULT IN A KICK OR BAN. BE CAREFUL NEXT TIME!", atkPlayer);
         AddPlayer(atkPlayer.SteamID, atkPlayer.PlayerName);
         
-        connection.Query($"INSERT INTO teamkill_ai_log (steamid, aitype) VALUES ({atkPlayer.SteamID}, '{victimPU.unitName}');").AsList();
+        connection.Query($"INSERT INTO teamkill_ai_log (steamid, attacker_aircraft_type, aitype) VALUES ({atkPlayer.SteamID}, '{atkPlayer.Aircraft.unitName}', '{victimPU.unitName}');").AsList();
         
         DetermineKick(atkPlayer);
-        DetermineBan(atkPlayer);
+        IsMarkedForReview(atkPlayer);
     }
 
     public static void LogVoteKick(Player targetPlayer, Player initiator)
