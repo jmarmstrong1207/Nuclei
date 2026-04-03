@@ -169,5 +169,14 @@ public class Nuclei : BaseUnityPlugin
         if (NucleiConfig.RankCatchUp!.Value) RankCatchUpService.CatchUpPlayer(player);
         ReportCommandService.LogChatMessage($"CritzOS {CritzOSGlobals.ServerName}",
             $"`{player.PlayerName} ({player.SteamID}) joined the game`");
+        
+        
+        // Add user to database or update their username
+        new Thread(() => 
+        {
+            Thread.CurrentThread.IsBackground = true; 
+            CritzOSDB.AddPlayer(player.SteamID, player.PlayerName);
+        }).Start();
+
     }
 }

@@ -7,6 +7,7 @@ using Npgsql;
 using NuclearOption.DedicatedServer.Commands;
 using NuclearOption.Networking;
 using Nuclei.Features;
+using Nuclei.Helpers;
 
 namespace Nuclei.CritzOS.Features;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -90,11 +91,17 @@ internal class CritzOSDB
         // Will safely error out when there's a duplicate
         try
         {
-            connection.Query($"INSERT INTO players (steamid, username) VALUES ({steamid}, '{username}')");
+            connection.Query($"INSERT INTO players (steamid, username) VALUES ({steamid}, '{PlayerUtils.StripStaffPrefix(username)}');");
         }
         catch
         {
             Nuclei.Logger?.LogInfo($"Player {username} already exists in database");
+            
+            // Change username to most recent one
+            var x = connection.QueryFirst($"SELECT * FROM players WHERE steamid={steamid};");
+            if (x.username != username)
+                connection.Query($"UPDATE players SET username='{PlayerUtils.StripStaffPrefix(username)}' WHERE steamid={steamid};");
+            Nuclei.Logger?.LogInfo($"Updated username {username} in DB");
         }
     }
 
