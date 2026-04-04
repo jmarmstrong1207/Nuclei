@@ -108,30 +108,31 @@ internal class CritzOSDB
         */
     }
 
-    public static void AddPlayer(ulong steamid, string username)
+    public static void AddPlayer(ulong playerSteamID, string playerUsername)
     {
         // Will safely error out when there's a duplicate
         try
         {
-            connection.Query($"INSERT INTO players (steamid, username) VALUES ({steamid}, '{PlayerUtils.StripStaffPrefix(username)}');");
+            connection.Query($"INSERT INTO players (steamid, username) VALUES ({playerSteamID}, '{PlayerUtils.StripStaffPrefix(playerUsername)}');");
         }
         catch
         {
-            Nuclei.Logger?.LogInfo($"Player {username} already exists in database");
+            Nuclei.Logger?.LogInfo($"Player {playerUsername} already exists in database");
             
-            // Change username to most recent one
-            var x = connection.QueryFirst($"SELECT * FROM players WHERE steamid={steamid};");
-            if (x.username != username)
-                connection.Query($"UPDATE players SET username='{PlayerUtils.StripStaffPrefix(username)}' WHERE steamid={steamid};");
-            Nuclei.Logger?.LogInfo($"Updated username {username} in DB");
+            // Change username to the most recent one
+            var x = connection.QueryFirst<Players>($"SELECT username FROM players WHERE steamid={playerSteamID};");
+            if (x.username != PlayerUtils.StripStaffPrefix(playerUsername))
+            {
+                connection.Query(
+                    $"UPDATE players SET username='{PlayerUtils.StripStaffPrefix(playerUsername)}' WHERE steamid={playerSteamID};");
+                Nuclei.Logger?.LogInfo($"Updated username {playerUsername} in DB");
+            }
         }
     }
 
     public static void logPlayerTeamkill(Player atkPlayer, Player victimPlayer)
     {
         ChatService.SendPrivateChatMessage($"WARNING: TEAMKILLING WILL RESULT IN A KICK OR BAN. BE CAREFUL NEXT TIME!", atkPlayer);
-        AddPlayer(atkPlayer.SteamID, atkPlayer.PlayerName);
-        AddPlayer(victimPlayer.SteamID, victimPlayer.PlayerName);
         
         connection.Query($"INSERT INTO teamkill_log (steamid, steamidofplayerkilled, attacker_aircraft_type, victim_aircraft_type) VALUES ({atkPlayer.SteamID}, {victimPlayer.SteamID}, '{atkPlayer.Aircraft.unitName}', '{victimPlayer.Aircraft.UniqueName}');").AsList();
 
@@ -143,7 +144,6 @@ internal class CritzOSDB
     public static void logAITeamkill(Player atkPlayer, PersistentUnit victimPU)
     {
         ChatService.SendPrivateChatMessage($"WARNING: TEAMKILLING WILL RESULT IN A KICK OR BAN. BE CAREFUL NEXT TIME!", atkPlayer);
-        AddPlayer(atkPlayer.SteamID, atkPlayer.PlayerName);
         
         connection.Query($"INSERT INTO teamkill_ai_log (steamid, attacker_aircraft_type, aitype) VALUES ({atkPlayer.SteamID}, '{atkPlayer.Aircraft.unitName}', '{victimPU.unitName}');").AsList();
         
@@ -193,20 +193,9 @@ public class ReportCommandService
         
     }
 }
+
 public class Players
 {
     public ulong steamid { get; set; }
     public string username { get; set; }
-}
-
-public class AITeamkillLog
-{
-    public ulong steamid { get; set; }
-    public string unitType { get; set; }
-}
-
-public class PlayerTeamkillLog
-{
-    public ulong steamid { get; set; }
-    public ulong victim { get; set; }
 }
