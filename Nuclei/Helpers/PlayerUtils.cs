@@ -86,11 +86,38 @@ public static class PlayerUtils
         if (string.IsNullOrEmpty(playerName))
             return playerName;
 
-        var pattern = $@"^\[\d*\]\s{Regex.Escape(NucleiConfig.StaffPrefix!.Value)}\s*";
+        var pattern = $@"^\[\d*\]\s*{Regex.Escape(NucleiConfig.StaffPrefix!.Value)}\s*";
         var cleanName = Regex.Replace(playerName, pattern, "", RegexOptions.IgnoreCase);
 
         return cleanName;
     }
+    
+    /// <summary>
+    ///     Utility function to strip a player name of the ID tag, if they have it.
+    /// </summary>
+    /// <param name="playerName"> The player name. </param>
+    /// <returns>Actual playername.</returns>
+    public static string StripIDPrefix(string playerName)
+    {
+        if (string.IsNullOrEmpty(playerName))
+            return playerName;
+
+        var pattern = $@"^\[\d*\]\s*";
+        var cleanName = Regex.Replace(playerName, pattern, "", RegexOptions.IgnoreCase);
+
+        return cleanName;
+    }
+    
+    /// <summary>
+    ///     Utility function to strip all prefixes
+    /// </summary>
+    /// <param name="playerName"> The player name. </param>
+    /// <returns>Actual playername.</returns>
+    public static string StripAllPrefix(string playerName)
+    {
+        return StripIDPrefix(StripStaffPrefix(playerName));
+    }
+    
 
     /// <summary>
     ///     Apply or remove the staff tag based on player permission level.

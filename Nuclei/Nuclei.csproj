@@ -63,6 +63,7 @@
     <ItemGroup>
         <Reference Include="Assembly-CSharp" HintPath="$(NUCLEAR_OPTION_SERVER_REFERENCES)\Assembly-CSharp.dll" Private="False" Publicize="True"/>
         <Reference Include="Assembly-CSharp-firstpass" HintPath="$(NUCLEAR_OPTION_SERVER_REFERENCES)\Assembly-CSharp-firstpass.dll" Private="False" Publicize="True"/>
+        <Reference Include="Microsoft.CSharp" />
         <Reference Include="UnityEngine" HintPath="$(NUCLEAR_OPTION_SERVER_REFERENCES)\UnityEngine.dll" Private="False" Publicize="True"/>
         <Reference Include="UnityEngine.CoreModule" HintPath="$(NUCLEAR_OPTION_SERVER_REFERENCES)\UnityEngine.CoreModule.dll" Private="False" Publicize="True"/>
         <Reference Include="UnityEngine.AudioModule" HintPath="$(NUCLEAR_OPTION_SERVER_REFERENCES)\UnityEngine.AudioModule.dll" Private="False" Publicize="True"/>

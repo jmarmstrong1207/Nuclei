@@ -121,7 +121,7 @@ internal class CritzOSDB
             
             // Change username to the most recent one
             var x = connection.QueryFirst<Players>($"SELECT username FROM players WHERE steamid={playerSteamID};");
-            if (x.username != PlayerUtils.StripStaffPrefix(playerUsername))
+            if (x.username != PlayerUtils.StripAllPrefix(playerUsername))
             {
                 connection.Query(
                     $"UPDATE players SET username='{PlayerUtils.StripStaffPrefix(playerUsername)}' WHERE steamid={playerSteamID};");
