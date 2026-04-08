@@ -73,7 +73,7 @@ internal class CritzOSDB
 
         if (kick_log_query.Count >= 3)
         {
-            ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}",
+            ReportCommandService.SendReportUnsanitized($"CritzOS {CritzOSGlobals.ServerName}",
                 $"@Staff Player {player.PlayerName} (||{player.SteamID}||) has been been marked for review");
             return true;
         }
@@ -163,13 +163,21 @@ public class ReportCommandService
 {
     internal static string webhookURL = Environment.GetEnvironmentVariable("webhookURL")!;
     internal static string chatLogWebhookURL = Environment.GetEnvironmentVariable("chatLogWebhookURL")!;
+    
+    public static bool SendReportUnsanitized(string username, string message)
+    {
+        return SendDiscordMessage(username, message, webhookURL);
+    }
+    
     public static bool SendReport(string username, string message)
     {
+        message = Regex.Replace(message, @"@", "");
         return SendDiscordMessage(username, message, webhookURL);
     }
 
     public static bool LogChatMessage(string username, string message)
     {
+        message = Regex.Replace(message, @"@", "");
         return SendDiscordMessage(username, message, chatLogWebhookURL);
     }
 
@@ -178,7 +186,7 @@ public class ReportCommandService
         NameValueCollection discordValues = new NameValueCollection();
         discordValues.Add("username", username);
         //discordValues.Add("avatar_url", profilepic);
-        discordValues.Add("content", Regex.Replace(message, @"@", ""));
+        discordValues.Add("content", message);
 
         try
         {
