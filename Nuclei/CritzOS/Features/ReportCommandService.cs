@@ -74,7 +74,7 @@ internal class CritzOSDB
         if (kick_log_query.Count >= 3)
         {
             ReportCommandService.SendReportUnsanitized($"CritzOS {CritzOSGlobals.ServerName}",
-                $"@Staff Player {player.PlayerName} (||{player.SteamID}||) has been been marked for review");
+                $"<@&1489759287936024726> Player {player.PlayerName} (||{player.SteamID}||) has been been marked for review");
             return true;
         }
 
