@@ -178,6 +178,11 @@ public static class MissionService
     {
         Globals.DedicatedServerManagerInstance.SetNextMission(option);
     }
+    
+    public static float GetCurrentMissionMaxTime()
+    {
+        return Globals.DedicatedServerManagerInstance.CurrentMissionOption.MaxTime;
+    }
 
     /// <summary>
     ///     Validates that the configured missions actually exist.

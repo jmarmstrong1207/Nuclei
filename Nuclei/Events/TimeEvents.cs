@@ -57,7 +57,7 @@ public static class TimeEvents
     {
         EveryMinute?.Invoke();
         var currentMissionTime = Time.timeSinceLevelLoad;
-        var maxMissionTime = Globals.DedicatedServerManagerInstance.CurrentMissionOption.MaxTime;
+        var maxMissionTime = MissionService.GetCurrentMissionMaxTime();
         if (maxMissionTime > 0 && maxMissionTime - currentMissionTime < 120)
             ChatService.SendChatMessage($"MISSION ENDING SOON! Remaining mission time: {(maxMissionTime - currentMissionTime)/60} minutes");
     }
@@ -67,7 +67,7 @@ public static class TimeEvents
         Every10Minutes?.Invoke();
         
         var currentMissionTime = Time.timeSinceLevelLoad;
-        var maxMissionTime = Globals.DedicatedServerManagerInstance.CurrentMissionOption.MaxTime;
+        var maxMissionTime = MissionService.GetCurrentMissionMaxTime();
         ChatService.SendChatMessage($"Remaining mission time: {(int)((maxMissionTime - currentMissionTime)/60)} minutes");
     }
 
