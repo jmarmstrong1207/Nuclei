@@ -42,16 +42,19 @@ internal class CritzOSDB
 
         var teamkill_ai_log_query = connection
             .Query($"SELECT * FROM teamkill_ai_log WHERE steamid = {player.SteamID} AND time >= '{minTime}';").AsList();
+        
+        var kick_log_query = connection
+            .Query($"SELECT * FROM kick_log WHERE steamid = {player.SteamID} AND time >= '{minTime}';").AsList();
 
-        if (teamkill_log_query.Count >= 4 ||
-            teamkill_ai_log_query.Count >= 20)
+        if (teamkill_log_query.Count / (kick_log_query.Count + 1) >= 4 ||
+            teamkill_ai_log_query.Count / (kick_log_query.Count + 1) >= 20)
         {
             CommandMessage msg = new CommandMessage();
             msg.name = "kick-player";
-            msg.arguments = new string[]
-            {
+            msg.arguments =
+            [
                 Convert.ToString(player.SteamID)
-            };
+            ];
 
             if (ServerRemoteCommands.Instance.FindAndRunCommand(msg).StatusCode == StatusCode.Success)
             {
