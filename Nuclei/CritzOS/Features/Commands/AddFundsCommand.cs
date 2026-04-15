@@ -11,23 +11,17 @@ namespace Nuclei.CritzOS.Features.Commands;
 /// <summary>
 ///     Command to ban a player from the server.
 /// </summary>
-public class DonateCommand(ConfigFile config) : PermissionConfigurableCommand(config)
+public class AddFundsCommand(ConfigFile config) : PermissionConfigurableCommand(config)
 {
-    public override string Name { get; } = "donate";
-    public override string Description { get; } = "Donate some of your money to somebody";
-    public override string Usage { get; } = "donate <ID in their name> <Amount in millions>. e.g: '/donate 1 50' donates 50 million";
+    public override string Name { get; } = "addfunds";
+    public override string Description { get; } = "Give some money to somebody";
+    public override string Usage { get; } = "addfunds <ID in their name> <Amount in millions>. e.g: '/addfunds 1 50' donates 50 million";
 
     public override bool Validate(Player player, string[] args)
     {
         if (args.Length == 0) return false;
         if (!int.TryParse(args[0], out _) || !int.TryParse(args[1], out _))
         {
-            return false;
-        }
-
-        if (int.Parse(args[1]) <= 0)
-        {
-            ChatService.SendPrivateChatMessage("You must donate more than $0m!", player);
             return false;
         }
 
@@ -44,17 +38,9 @@ public class DonateCommand(ConfigFile config) : PermissionConfigurableCommand(co
             return false;
         }
 
-        var playerBal = player.Allocation;
-        if (amount > playerBal)
-        {
-            ChatService.SendPrivateChatMessage("You don't have that much money. Please try again", player);
-            return false;
-        }
-        
-        player.SetAllocation(player.Allocation - amount);
         targetPlayer!.SetAllocation(targetPlayer.Allocation + amount);
         
-        ChatService.SendChatMessage($"{player.PlayerName} has donated ${amount}m to {targetPlayer.PlayerName}");
+        ChatService.SendChatMessage($"{player.PlayerName} has added ${amount}m to {targetPlayer.PlayerName}");
         return true;
     }
 
@@ -74,6 +60,5 @@ public class DonateCommand(ConfigFile config) : PermissionConfigurableCommand(co
         return true;
     }
 
-
-    public override PermissionLevel DefaultPermissionLevel { get; } = PermissionLevel.Everyone;
+    public override PermissionLevel DefaultPermissionLevel { get; } = PermissionLevel.Moderator;
 }

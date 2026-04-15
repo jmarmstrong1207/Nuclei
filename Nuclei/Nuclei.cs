@@ -135,6 +135,7 @@ public class Nuclei : BaseUnityPlugin
         CommandService.RegisterCommand(new DonateCommand(Config));
         CommandService.RegisterCommand(new updateMotdCommand(Config));
         CommandService.RegisterCommand(new DiscordCommand(Config));
+        CommandService.RegisterCommand(new AddFundsCommand(Config));
     }
 
     private void SubscribeToEvents()
