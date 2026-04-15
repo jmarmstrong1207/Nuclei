@@ -1,4 +1,5 @@
 using System;
+using BepInEx.Logging;
 using HarmonyLib;
 using NuclearOption.SavedMission;
 using Nuclei.Features;
@@ -22,6 +23,7 @@ public class MissionSaveLoadPatches
         PlayerUtils.ID = 1;
         RandomizeWeather(ref mission);
         ModifyDifficulty(ref mission);
+        RandomizeTeam(ref mission);
     }
 
     private static void ModifyDifficulty(ref Mission mission)
@@ -46,5 +48,24 @@ public class MissionSaveLoadPatches
         mission.environment.windSpeed = (float)(rnd.NextDouble() * 4);
         mission.environment.windTurbulence = (float)(rnd.NextDouble()* 0.8);
         mission.environment.windHeading = rnd.Next(0, 360);
+    }
+    
+    // CRITZOS SPECIFIC! WOULD NEED CONFIG ADDING TO MAKE IT PUBLIC BASICALLY
+    private static void RandomizeTeam(ref Mission mission)
+    {
+        var rnd = new Random();
+        int probability = rnd.Next(0, 100);
+        if (probability <= 50)
+        {
+            mission.factions[0].preventJoin = true;
+            mission.factions[1].preventJoin = false;
+        }
+        else
+        {
+            mission.factions[0].preventJoin = false;
+            mission.factions[1].preventJoin = true;
+        }
+        Nuclei.Nuclei.Logger?.LogInfo($"{mission.factions[0].factionName} preventjoin set to {mission.factions[0].preventJoin}");
+        Nuclei.Nuclei.Logger?.LogInfo($"{mission.factions[1].factionName} preventjoin set to {mission.factions[1].preventJoin}");
     }
 }
