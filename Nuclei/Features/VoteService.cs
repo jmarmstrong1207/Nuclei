@@ -51,6 +51,7 @@ public static class VoteService
     }
 }
 
+// Usually only used by VoteService
 public class VoteSession
 {
     private readonly Player _initiator;
