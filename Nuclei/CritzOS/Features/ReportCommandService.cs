@@ -127,7 +127,7 @@ internal class CritzOSDB
             if (x.username != PlayerUtils.StripAllPrefix(playerUsername))
             {
                 connection.Query(
-                    $"UPDATE players SET username='{PlayerUtils.StripStaffPrefix(playerUsername)}' WHERE steamid={playerSteamID};");
+                    $"UPDATE players SET username='{PlayerUtils.StripAllPrefix(playerUsername)}' WHERE steamid={playerSteamID};");
                 Nuclei.Logger?.LogInfo($"Updated username {playerUsername} in DB");
             }
         }
