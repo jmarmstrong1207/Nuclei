@@ -25,26 +25,28 @@ internal class CritzOSDB
 
     public static void LogChat(Player player, string message)
     {
-        connection.Query($"INSERT INTO chat_log (steamid, message, server_name) VALUES ({player.SteamID}, '{message}', '{CritzOSGlobals.ServerName}');");
+        var sql = "INSERT INTO chat_log (steamid, message, server_name) VALUES (@steamid, @message, @server_name);";
+        connection.ExecuteAsync(sql, new { steamid = (decimal) player.SteamID, message, server_name = CritzOSGlobals.ServerName });
     }
 
     // Logs manual kicks
     public static void LogKick(Player player)
     {
-        connection.Query($"INSERT INTO kick_log (steamid) VALUES ({player.SteamID});");
+        var sql = "INSERT INTO kick_log (steamid) VALUES (@steamid);";
+        connection.ExecuteAsync(sql, new { steamid = (decimal) player.SteamID });
     }
     
     public static bool DetermineKick(Player player)
     {
         var minTime = DateTime.SpecifyKind(DateTime.Now.AddHours(-1), DateTimeKind.Utc).ToString("yyyy-MM-dd");
         var teamkill_log_query = connection
-            .Query($"SELECT * FROM teamkill_log WHERE steamid = {player.SteamID} AND time >= '{minTime}';").AsList();
+            .Query($"SELECT * FROM teamkill_log WHERE steamid = {(decimal) player.SteamID} AND time >= '{minTime}';").AsList();
 
         var teamkill_ai_log_query = connection
-            .Query($"SELECT * FROM teamkill_ai_log WHERE steamid = {player.SteamID} AND time >= '{minTime}';").AsList();
+            .Query($"SELECT * FROM teamkill_ai_log WHERE steamid = {(decimal) player.SteamID} AND time >= '{minTime}';").AsList();
         
         var kick_log_query = connection
-            .Query($"SELECT * FROM kick_log WHERE steamid = {player.SteamID} AND time >= '{minTime}';").AsList();
+            .Query($"SELECT * FROM kick_log WHERE steamid = {(decimal) player.SteamID} AND time >= '{minTime}';").AsList();
 
         if (teamkill_log_query.Count / (kick_log_query.Count + 1) >= 4 ||
             teamkill_ai_log_query.Count / (kick_log_query.Count + 1) >= 20)
@@ -53,7 +55,7 @@ internal class CritzOSDB
             msg.name = "kick-player";
             msg.arguments =
             [
-                Convert.ToString(player.SteamID)
+                Convert.ToString((decimal) player.SteamID)
             ];
 
             if (ServerRemoteCommands.Instance.FindAndRunCommand(msg).StatusCode == StatusCode.Success)
@@ -116,18 +118,20 @@ internal class CritzOSDB
         // Will safely error out when there's a duplicate
         try
         {
-            connection.Query($"INSERT INTO players (steamid, username) VALUES ({playerSteamID}, '{PlayerUtils.StripStaffPrefix(playerUsername)}');");
+            var sql = "INSERT INTO players (steamid, username) VALUES (@steamid, @username);";
+            connection.ExecuteAsync(sql, new { steamid = (decimal)  playerSteamID, username = playerUsername });
         }
         catch
         {
             Nuclei.Logger?.LogInfo($"Player {playerUsername} already exists in database");
             
             // Change username to the most recent one
-            var x = connection.QueryFirst<Players>($"SELECT username FROM players WHERE steamid={playerSteamID};");
+            var x = connection.QueryFirst<Players>($"SELECT username FROM players WHERE steamid = @steamid;", new {steamid = (decimal) playerSteamID});
             if (x.username != PlayerUtils.StripAllPrefix(playerUsername))
             {
-                connection.Query(
-                    $"UPDATE players SET username='{PlayerUtils.StripAllPrefix(playerUsername)}' WHERE steamid={playerSteamID};");
+                var sql =
+                    "UPDATE players SET username = @username WHERE steamid = @steamid;";
+                connection.ExecuteAsync(sql, new {username = PlayerUtils.StripAllPrefix(playerUsername), steamid = (decimal) playerSteamID});
                 Nuclei.Logger?.LogInfo($"Updated username {playerUsername} in DB");
             }
         }
@@ -137,7 +141,15 @@ internal class CritzOSDB
     {
         ChatService.SendPrivateChatMessage($"WARNING: TEAMKILLING WILL RESULT IN A KICK OR BAN. BE CAREFUL NEXT TIME!", atkPlayer);
         
-        connection.Query($"INSERT INTO teamkill_log (steamid, steamidofplayerkilled, attacker_aircraft_type, victim_aircraft_type) VALUES ({atkPlayer.SteamID}, {victimPlayer.SteamID}, '{atkPlayer.Aircraft.unitName}', '{victimPlayer.Aircraft.UniqueName}');").AsList();
+        var sql = "INSERT INTO teamkill_log (steamid, steamidofplayerkilled, attacker_aircraft_type, victim_aircraft_type) VALUES (@steamid, @steamidofplayerkilled, @attacker_aircraft_type, @victim_aircraft_type );";
+        connection.ExecuteAsync(sql,
+            new
+            {
+                steamid = (decimal) atkPlayer.SteamID, 
+                steamidofplayerkilled = victimPlayer.SteamID,
+                attacker_aircraft_type = atkPlayer.Aircraft.unitName,
+                victim_aircraft_type = victimPlayer.Aircraft.UniqueName
+            });
 
         DetermineKick(atkPlayer);
         IsMarkedForReview(atkPlayer);
@@ -147,8 +159,15 @@ internal class CritzOSDB
     public static void logAITeamkill(Player atkPlayer, PersistentUnit victimPU)
     {
         ChatService.SendPrivateChatMessage($"WARNING: TEAMKILLING WILL RESULT IN A KICK OR BAN. BE CAREFUL NEXT TIME!", atkPlayer);
-        
-        connection.Query($"INSERT INTO teamkill_ai_log (steamid, attacker_aircraft_type, aitype) VALUES ({atkPlayer.SteamID}, '{atkPlayer.Aircraft.unitName}', '{victimPU.unitName}');").AsList();
+
+        var sql = "INSERT INTO teamkill_ai_log (steamid, attacker_aircraft_type, aitype) VALUES (@steamid, @attacker_aircraft_type, @aitype);";
+        connection.ExecuteAsync(sql,
+            new
+            {
+                steamid = (decimal) atkPlayer.SteamID,
+                attacker_aircraft_type = atkPlayer.Aircraft.unitName,
+                aitype = victimPU.unitName
+            });
         
         DetermineKick(atkPlayer);
         IsMarkedForReview(atkPlayer);
@@ -158,6 +177,14 @@ internal class CritzOSDB
     {
         AddPlayer(targetPlayer.SteamID, targetPlayer.PlayerName);
         AddPlayer(initiator.SteamID, initiator.PlayerName);
+        var sql = "INSERT INTO votekick_log (steamid, steamid_of_votekick_initiator, reason) VALUES (@steamid, @steamid_of_votekick_initiator, @reason);";
+        connection.ExecuteAsync(sql, 
+            new
+            {
+                steamid = (decimal) targetPlayer.SteamID, 
+                steamid_of_votekick_initiator = initiator.SteamID, 
+                reason
+            });
         connection.Query($"INSERT INTO votekick_log (steamid, steamid_of_votekick_initiator, reason) VALUES ({targetPlayer.SteamID}, {initiator.SteamID}, '{reason}');").AsList();
     }
 }
