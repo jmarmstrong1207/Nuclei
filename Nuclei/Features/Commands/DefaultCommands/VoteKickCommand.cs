@@ -17,7 +17,7 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
 {
     public override string Name { get; } = "votekick";
     public override string Description { get; } = "lets you vote to kick a user from a list";
-    public override string Usage { get; } = $"{NucleiConfig.CommandPrefixChar}votekick <ID in their name from the Scoreboard> to select player";
+    public override string Usage { get; } = $"{NucleiConfig.CommandPrefixChar}votekick <ID in their name from the Scoreboard> <Reason>";
     public override PermissionLevel DefaultPermissionLevel { get; } = PermissionLevel.Everyone;
 
     public override bool Validate(Player player, string[] args)
@@ -26,18 +26,23 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
         {
             return false;
         }
-        if (args.Length > 1) return false;
         if ((args.Length == 1 && !int.TryParse(args[0], out _)) || (args.Length == 1 && int.Parse(args[0]) <= 0))
         {
             ChatService.SendPrivateChatMessage("Number invalid. Please Try again.", player);
             return false;
         }
-        return true;
+        if (args.Length < 2)
+        {
+            ChatService.SendPrivateChatMessage("Please provide a reason.", player);
+            return false;
+        }
+        return args.Length >= 2;
     }
 
     public override bool Execute(Player player, string[] args)
     {
         int idx = int.Parse(args[0]);
+        string reason = string.Join(" ", args.Skip(1).ToArray());
         if (!PlayerUtils.TryFindPlayerbyID(idx, out Player? targetPlayer))
         {
             ChatService.SendPrivateChatMessage("Could not find player to votekick.", player);
@@ -47,7 +52,7 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
         {
             ReportCommandService.SendReport($"{player.PlayerName} ({CritzOSGlobals.ServerName}",
                 $"Votekick for {targetPlayer!.PlayerName} has passed");
-            CritzOSDB.LogVoteKick(targetPlayer, player);
+            CritzOSDB.LogVoteKick(targetPlayer, player, reason);
             PlayerUtils.KickPlayer(targetPlayer);
         };
 

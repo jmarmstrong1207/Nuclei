@@ -154,11 +154,11 @@ internal class CritzOSDB
         IsMarkedForReview(atkPlayer);
     }
 
-    public static void LogVoteKick(Player targetPlayer, Player initiator)
+    public static void LogVoteKick(Player targetPlayer, Player initiator, string reason)
     {
         AddPlayer(targetPlayer.SteamID, targetPlayer.PlayerName);
         AddPlayer(initiator.SteamID, initiator.PlayerName);
-        connection.Query($"INSERT INTO votekick_log (steamid, steamid_of_votekick_initiator) VALUES ({targetPlayer.SteamID}, {initiator.SteamID});").AsList();
+        connection.Query($"INSERT INTO votekick_log (steamid, steamid_of_votekick_initiator, reason) VALUES ({targetPlayer.SteamID}, {initiator.SteamID}, '{reason}');").AsList();
     }
 }
 

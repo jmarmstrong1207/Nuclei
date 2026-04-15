@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Timers;
+using BepInEx;
 using NuclearOption.Networking;
 using Nuclei.CritzOS.Features;
 using Nuclei.Helpers;
@@ -25,9 +26,9 @@ public static class VoteService
     /// <param name="startingMessage"></param>
     /// <param name="action"></param>
     /// <returns></returns>
-    public static void StartVote(Player initiator, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true)
+    public static void StartVote(Player initiator, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true, string? reason = null)
     {
-        _activeVote = new VoteSession(initiator, action, cancelIfMissionChanges, thresholdByFullServer);
+        _activeVote = new VoteSession(initiator, action, cancelIfMissionChanges, thresholdByFullServer, reason);
         _activeVote.Start();
     }
 
@@ -59,6 +60,7 @@ public class VoteSession
     private readonly string _startingMessage;
     private int _timeLeft;
     private int _voteThreshold; // don't want threshold changing as players leave or join
+    private string? _reason;
     
     // If true, vote will pass ONLY IF it reaches threshold.
     // If false, vote will pass if it reaches threshold OR runs out of time and YES votes is greater than NO votes
@@ -73,7 +75,7 @@ public class VoteSession
     
     private static readonly int DEFAULT_VOTING_WINDOW = NucleiConfig.KickTimeout!.Value; 
 
-    public VoteSession(Player initiator, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true)
+    public VoteSession(Player initiator, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true, string? reason = null)
     {
         _initiator = initiator;
         _voteThreshold = VoteThreshold();
@@ -85,11 +87,14 @@ public class VoteSession
         _action = action;
         _thresholdByFullServer = thresholdByFullServer;
         _cancelIfMissionChanges = cancelIfMissionChanges;
+        _reason = reason;
     }
 
     public void Start()
     {
         ChatService.SendChatMessage($"Type '{NucleiConfig.CommandPrefixChar}y' to vote yes, '{NucleiConfig.CommandPrefixChar}n' to vote no. You have {_timeLeft} seconds to cast your vote. ({_yesVoters.Count}/{_voteThreshold} YES votes, {_noVoters.Count}/{_voteThreshold} NO votes).");
+        if (!_reason.IsNullOrWhiteSpace())
+            ChatService.SendChatMessage($"Reason: {_reason}");
         _timer.Start();
         AddVote(_initiator, true);
     }
@@ -157,6 +162,8 @@ public class VoteSession
                     _previousTimeSinceLevelLoad = Time.timeSinceLevelLoad;
             }
             ChatService.SendChatMessage($"Vote ends in {_timeLeft} seconds. Type `{NucleiConfig.CommandPrefixChar}y` to vote YES, '{NucleiConfig.CommandPrefixChar}n' for NO. ({_yesVoters.Count}/{_voteThreshold} YES votes, {_noVoters.Count}/{_voteThreshold} NO votes).");
+            if (!_reason.IsNullOrWhiteSpace())
+                ChatService.SendChatMessage($"Reason: {_reason}");
         }
         
         if (_timeLeft <= 0)
