@@ -1,16 +1,7 @@
 
 # CritzOS Notes
 
-Due to it targeting netstandard2.1, these need to be manually installed and transferred over to the BepInEx plugins folder:
-
-For dynamic motd.json updating system (System.Text.Json):
-- System.Memory.dll
-- System.Buffers.dll
-- System.Numerics.Vectors.dll
-
-For Dapper:
-- System.Reflection.Emit.Lightweight.dll
-- System.Reflection.Emit.ILGeneration.dll
+...
 
 --------
 # Nuclei
