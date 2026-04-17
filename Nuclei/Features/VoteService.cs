@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Timers;
 using BepInEx;
 using NuclearOption.Networking;
+using NuclearOption.SavedMission;
 using Nuclei.CritzOS.Features;
 using Nuclei.Helpers;
 using UnityEngine;
@@ -12,11 +13,11 @@ namespace Nuclei.Features;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 public static class VoteService
 {
-    private static VoteSession? _activeVote;
+    internal static VoteSession? ActiveVote;
 
     public static bool CanStartVote()
     {
-        return _activeVote == null;
+        return ActiveVote == null;
     }
 
     /// <summary>
@@ -30,8 +31,8 @@ public static class VoteService
     /// <returns></returns>
     public static void StartVote(Player initiator, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true, string? reason = null)
     {
-        _activeVote = new VoteSession(initiator, action, cancelIfMissionChanges, thresholdByFullServer, reason);
-        _activeVote.Start();
+        ActiveVote = new VoteSession(initiator, action, cancelIfMissionChanges, thresholdByFullServer, reason);
+        ActiveVote.Start();
     }
 
     /// <summary>
@@ -41,16 +42,16 @@ public static class VoteService
     /// <param name="votedYes"></param>
     public static void HandleVote(Player voter, bool votedYes)
     {
-        if (_activeVote == null)
+        if (ActiveVote == null)
         {
             ChatService.SendPrivateChatMessage($"A vote session has not been started, use a vote command to start one.", voter);
         }
-        else _activeVote.AddVote(voter, votedYes);
+        else ActiveVote.AddVote(voter, votedYes);
     }
 
     public static void StopVoteKick()
     {
-        _activeVote = null;
+        ActiveVote = null;
     }
 }
 
@@ -69,13 +70,13 @@ public class VoteSession
     // If false, vote will pass if it reaches threshold OR runs out of time and YES votes is greater than NO votes
     private readonly bool _thresholdByFullServer;
 
-    private readonly bool _cancelIfMissionChanges;
+    public bool CancelIfMissionChanges { get; }
 
     private float _previousTimeSinceLevelLoad;
 
     // Function to call when vote succeeds
     private readonly Action _action;
-    
+
     private static readonly int DefaultVotingWindow = NucleiConfig.KickTimeout!.Value; 
 
     public VoteSession(Player initiator, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true, string? reason = null)
@@ -89,7 +90,7 @@ public class VoteSession
         _noVoters = [];
         _action = action;
         _thresholdByFullServer = thresholdByFullServer;
-        _cancelIfMissionChanges = cancelIfMissionChanges;
+        CancelIfMissionChanges = cancelIfMissionChanges;
         _reason = reason;
     }
 
@@ -158,13 +159,6 @@ public class VoteSession
 
         if ((_timeLeft % 10 == 0 && _timeLeft > 0) || _timeLeft < 10) // every ten seconds or below 10 seconds every tick
         {
-            if (_cancelIfMissionChanges)
-            {
-                if (Time.timeSinceLevelLoad < _previousTimeSinceLevelLoad)
-                    FinaliseVote(false);
-                else
-                    _previousTimeSinceLevelLoad = Time.timeSinceLevelLoad;
-            }
             ChatService.SendChatMessage($"Vote ends in {_timeLeft} seconds. Type `{NucleiConfig.CommandPrefixChar}y` to vote YES, '{NucleiConfig.CommandPrefixChar}n' for NO. ({_yesVoters.Count}/{_voteThreshold} YES votes, {_noVoters.Count}/{_voteThreshold} NO votes).");
             if (!_reason.IsNullOrWhiteSpace())
                 ChatService.SendChatMessage($"Reason: {_reason}");
@@ -182,7 +176,7 @@ public class VoteSession
     /// <summary>
     /// Checks if vote threshold is met, then calls the action function associated
     /// </summary>
-    private void FinaliseVote(bool thresholdMet)
+    public void FinaliseVote(bool thresholdMet)
     {
         _timer.Stop();
         _timer.Dispose();
@@ -207,6 +201,7 @@ public class VoteSession
     {
         var threshold = NucleiConfig.KickThreshold!.Value;
         var totalPlayers = Globals.AuthenticatedPlayers.Count;
-        return (int)(totalPlayers * threshold);
+        if (totalPlayers == 1) return 1;
+        return (int)Math.Ceiling(totalPlayers * threshold);
     }
 }

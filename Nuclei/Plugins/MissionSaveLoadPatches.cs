@@ -25,7 +25,14 @@ public class MissionSaveLoadPatches
         PlayerUtils.ResetIDCount();
         RandomizeWeather(ref mission);
         ModifyDifficulty(ref mission);
+        CancelVote();
         //RandomizeTeam(ref mission);
+    }
+
+    private static void CancelVote()
+    {
+        if (VoteService.ActiveVote != null && VoteService.ActiveVote.CancelIfMissionChanges)
+            VoteService.ActiveVote.FinaliseVote(false);
     }
 
     private static void ModifyDifficulty(ref Mission mission)
