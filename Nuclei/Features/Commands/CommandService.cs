@@ -77,6 +77,7 @@ public static class CommandService
             if (!TryGetCommand(commandName, out var command))
             {
                 Nuclei.Logger?.LogWarning($"Command {commandName} not found");
+                ChatService.SendPrivateChatMessage("Command not found. View /help for commands. Type /help <cmd> for how to use that specific command.", player);
                 return false;
             }
         
