@@ -140,6 +140,11 @@ public static class PlayerUtils
         player.PlayerName = newName;
     }
 
+    public static void ResetIDCount()
+    {
+        ID = 1;
+    }
+
     public static bool TryFindPlayerbyID(int i, out Player? player)
     {
         var playerList = new List<INetworkPlayer>(Globals.AuthenticatedPlayers).Where(ip => PlayerHelper.TryGetPlayer(ip, out Player _)).Select(ip =>

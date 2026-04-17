@@ -20,10 +20,10 @@ public class MissionSaveLoadPatches
     {
         if (!__result || mission == null) return;
 
-        PlayerUtils.ID = 1;
+        PlayerUtils.ResetIDCount();
         RandomizeWeather(ref mission);
         ModifyDifficulty(ref mission);
-        RandomizeTeam(ref mission);
+        //RandomizeTeam(ref mission);
     }
 
     private static void ModifyDifficulty(ref Mission mission)
@@ -53,6 +53,11 @@ public class MissionSaveLoadPatches
     // CRITZOS SPECIFIC! WOULD NEED CONFIG ADDING TO MAKE IT PUBLIC BASICALLY
     private static void RandomizeTeam(ref Mission mission)
     {
+        if (mission.Name == "THE BOSCALI INVASION - FALL OF FELDSPAR")
+        {
+            Nuclei.Nuclei.Logger?.LogInfo("SKIPPING TEAM RANDOMIZATION FOR THIS MISSION");
+            return;
+        }
         var rnd = new Random();
         int probability = rnd.Next(0, 100);
         if (probability <= 50)
