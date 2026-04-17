@@ -56,7 +56,7 @@ public static class TimeEvents
     internal static void OnEveryMinute()
     {
         EveryMinute?.Invoke();
-        var currentMissionTime = Time.timeSinceLevelLoad;
+        var currentMissionTime = MissionService.GetCurrentMissionTime();
         var maxMissionTime = MissionService.GetCurrentMissionMaxTime();
         if (maxMissionTime > 0 && maxMissionTime - currentMissionTime < 120)
             ChatService.SendChatMessage($"MISSION ENDING SOON! Remaining mission time: {(maxMissionTime - currentMissionTime)/60} minutes");

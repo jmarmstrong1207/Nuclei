@@ -9,6 +9,7 @@ using NuclearOption.SavedMission;
 using NuclearOption.SavedMission.ObjectiveV2;
 using Nuclei.Enums;
 using Nuclei.Helpers;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Nuclei.Features;
@@ -170,6 +171,11 @@ public static class MissionService
         Nuclei.Logger?.LogDebug($"Set mission: {mission.Name}");
     }
 
+    public static Mission GetCurrentMission()
+    {
+        return MissionManager.CurrentMission;
+    }
+
     /// <summary>
     ///     Select the next mission on the server.
     /// </summary>
@@ -182,6 +188,11 @@ public static class MissionService
     public static float GetCurrentMissionMaxTime()
     {
         return Globals.DedicatedServerManagerInstance.CurrentMissionOption.MaxTime;
+    }
+    
+    public static float GetCurrentMissionTime()
+    {
+        return Time.timeSinceLevelLoad;
     }
 
     /// <summary>
