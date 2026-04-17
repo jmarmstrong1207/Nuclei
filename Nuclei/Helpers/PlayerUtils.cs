@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Mirage;
@@ -70,13 +71,22 @@ public static class PlayerUtils
     /// <returns></returns>
     public static bool TryFindPlayer(string playerName, out Player? playerObject)
     {
-            return TryGetPlayer(Globals.AuthenticatedPlayers.FirstOrDefault(p =>
+        var player = Globals.AuthenticatedPlayers.FirstOrDefault(p =>
+        {
+            if (p.TryGetPlayer(out var po))
             {
-                Player po;
-                TryGetPlayer(p, out po);
-                return StripStaffPrefix(po.PlayerName ?? "").ToLower()
-                    .StartsWith(StripStaffPrefix(playerName).ToLower());
-            }), out playerObject);
+                return StripAllPrefix(po!.PlayerName ?? "").ToLower()
+                    .StartsWith(StripAllPrefix(playerName).ToLower());
+            }
+
+            return false;
+        });
+
+        if (player != null)
+            return player.TryGetPlayer(out playerObject);
+
+        playerObject = null;
+        return false;
     }
     
     /// <summary>
