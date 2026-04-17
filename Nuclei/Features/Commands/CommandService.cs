@@ -72,38 +72,46 @@ public static class CommandService
     /// <returns></returns>
     private static bool TryExecuteCommand(Player player, string commandName, string[] args)
     {
-        if (!TryGetCommand(commandName, out var command))
+        try
         {
-            Nuclei.Logger?.LogWarning($"Command {commandName} not found");
-            return false;
-        }
-        
-        if (GetPlayerPermissionLevel(player) < command.PermissionLevel)
-        {
-            Nuclei.Logger?.LogWarning($"Player {player.PlayerName} does not have permission to execute command {commandName}");
-            ChatService.SendPrivateChatMessage("You do not have permission to execute this command.", player);
-            return false;
-        }
-        
-        if (command.Validate(player, args))
-        {
-            if (command.Execute(player, args))
+            if (!TryGetCommand(commandName, out var command))
             {
-                Nuclei.Logger?.LogInfo($"Command {commandName} executed successfully by {player.PlayerName} with argument(s): {string.Join(", ", args)}");
+                Nuclei.Logger?.LogWarning($"Command {commandName} not found");
+                return false;
+            }
+        
+            if (GetPlayerPermissionLevel(player) < command.PermissionLevel)
+            {
+                Nuclei.Logger?.LogWarning($"Player {player.PlayerName} does not have permission to execute command {commandName}");
+                ChatService.SendPrivateChatMessage("You do not have permission to execute this command.", player);
+                return false;
+            }
+        
+            if (command.Validate(player, args))
+            {
+                if (command.Execute(player, args))
+                {
+                    Nuclei.Logger?.LogInfo($"Command {commandName} executed successfully by {player.PlayerName} with argument(s): {string.Join(", ", args)}");
+                }
+                else
+                {
+                    Nuclei.Logger?.LogWarning($"Command {commandName} failed to execute by {player.PlayerName} with argument(s): {string.Join(", ", args)}");
+                    ChatService.SendPrivateChatMessage("An error occurred while executing the command.", player);
+                }
             }
             else
             {
-                Nuclei.Logger?.LogWarning($"Command {commandName} failed to execute by {player.PlayerName} with argument(s): {string.Join(", ", args)}");
-                ChatService.SendPrivateChatMessage("An error occurred while executing the command.", player);
+                Nuclei.Logger?.LogWarning($"Validation for command {commandName} ran by {player.PlayerName} failed with argument(s): {string.Join(", ", args)}");
+                ChatService.SendPrivateChatMessage($"Invalid arguments: {command.Usage}", player);
+                return false;
             }
+            return true;
         }
-        else
+        catch (Exception e)
         {
-            Nuclei.Logger?.LogWarning($"Validation for command {commandName} ran by {player.PlayerName} failed with argument(s): {string.Join(", ", args)}");
-            ChatService.SendPrivateChatMessage($"Invalid arguments: {command.Usage}", player);
-            return false;
+            Nuclei.Logger?.LogError(e);
+            throw;
         }
-        return true;
     }
 
     /// <summary>
