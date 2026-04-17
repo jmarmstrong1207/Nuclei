@@ -13,6 +13,7 @@ using Nuclei.Features;
 using Nuclei.Features.Commands;
 using Nuclei.Features.Commands.DefaultCommands;
 using Nuclei.Helpers;
+using Nuclei.Plugins;
 
 namespace Nuclei;
 

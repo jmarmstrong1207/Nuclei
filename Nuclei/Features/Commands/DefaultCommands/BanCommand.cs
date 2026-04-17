@@ -1,6 +1,5 @@
 using System;
 using BepInEx.Configuration;
-using NuclearOption.DedicatedServer.Commands;
 using NuclearOption.Networking;
 using Nuclei.Enums;
 using Nuclei.Helpers;
@@ -27,13 +26,14 @@ public class BanCommand(ConfigFile config) : PermissionConfigurableCommand(confi
         var target = args[0];
 
         int idx = int.Parse(args[0]);
-        if (!PlayerUtils.TryFindPlayerbyID(idx, out Player? targetPlayer))
+        if (!PlayerUtils.TryFindPlayerbyID(idx, out var targetPlayer))
         {
             ChatService.SendPrivateChatMessage("Could not find player to votekick.", player);
             Nuclei.Logger?.LogWarning($"Ban command run. Player [{target}] not found.");
+            return false;
         }
 
-        var reason = $"Player: {targetPlayer.PlayerName}, " + String.Join(" ", args).Substring(1);
+        var reason = $"Player: {targetPlayer!.PlayerName}, " + string.Join(" ", args).Substring(1);
         if (PlayerUtils.BanPlayer(targetPlayer, reason))
         {
             ChatService.SendPrivateChatMessage($"Player {targetPlayer.PlayerName} has been banned", player);

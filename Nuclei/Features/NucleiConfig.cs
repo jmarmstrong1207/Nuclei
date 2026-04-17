@@ -1,12 +1,11 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json.Nodes;
 using BepInEx.Configuration;
 using Nuclei.Enums;
 using Nuclei.Helpers;
 using Steamworks;
+// ReSharper disable MemberCanBePrivate.Global
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 
 namespace Nuclei.Features;
 

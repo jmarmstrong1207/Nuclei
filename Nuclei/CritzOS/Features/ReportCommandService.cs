@@ -21,7 +21,7 @@ internal static class CritzOSDB
     static CritzOSDB()
     {
         Connection =
-            new NpgsqlConnection(CritzOSGlobals.connectionString);
+            new NpgsqlConnection(CritzOSGlobals.ConnectionString);
         Connection.Open();
     }
 

@@ -6,6 +6,8 @@ using Mirage;
 using NuclearOption.DedicatedServer.Commands;
 using NuclearOption.Networking;
 using Nuclei.Features;
+// ReSharper disable MemberCanBePrivate.Global
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace Nuclei.Helpers;
 
@@ -15,25 +17,26 @@ namespace Nuclei.Helpers;
 public static class PlayerUtils
 {
 
-    public static bool KickPlayer(Player player)
+    public static void KickPlayer(Player player)
     {
         try
         {
             Globals.NetworkManagerNuclearOptionInstance.KickPlayerAsync(player);
-            return true;
         }
         catch (Exception e)
         {
-            return false;
+            Nuclei.Logger?.LogError(e);
         }
     }
     public static bool BanPlayer(Player targetPlayer, string reason)
     {
-        CommandMessage msg = new CommandMessage();
-        msg.name = "banlist-add";
-        msg.arguments = new string[]
+        var msg = new CommandMessage
         {
-            Convert.ToString(targetPlayer.SteamID), reason
+            name = "banlist-add",
+            arguments =
+            [
+                Convert.ToString(targetPlayer.SteamID), reason
+            ]
         };
 
         if (ServerRemoteCommands.Instance.FindAndRunCommand(msg).StatusCode == StatusCode.Success)
@@ -153,20 +156,20 @@ public static class PlayerUtils
             return p;
         }).ToList();
         List<Player> l = playerList.Where(p => p.PlayerName.StartsWith($"[{i}]")).ToList();
-        if (l.Count == 0)
+        switch (l.Count)
         {
-            Nuclei.Logger?.LogError("Player couldn't be found by ID.");
-            player = null;
-            return false;
+            case 0:
+                Nuclei.Logger?.LogError("Player couldn't be found by ID.");
+                player = null;
+                return false;
+            case > 1:
+                Nuclei.Logger?.LogError("Not supposed to happen: Player with identical IDs");
+                player = null;
+                return false;
+            default:
+                player = l[0];
+                return true;
         }
-        if (l.Count > 1)
-        {
-            Nuclei.Logger?.LogError("Not supposed to happen: Player with identical IDs");
-            player = null;
-            return false;
-        }
-        player = l[0];
-        return true;
     }
 
 }

@@ -23,8 +23,10 @@ public static class VoteService
     /// start a vote-kick session for target player
     /// </summary>
     /// <param name="initiator"></param>
-    /// <param name="startingMessage"></param>
     /// <param name="action"></param>
+    /// <param name="cancelIfMissionChanges"></param>
+    /// <param name="thresholdByFullServer"></param>
+    /// <param name="reason"></param>
     /// <returns></returns>
     public static void StartVote(Player initiator, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true, string? reason = null)
     {
@@ -36,6 +38,7 @@ public static class VoteService
     /// handles a vote from the vote command
     /// </summary>
     /// <param name="voter"></param>
+    /// <param name="votedYes"></param>
     public static void HandleVote(Player voter, bool votedYes)
     {
         if (_activeVote == null)
@@ -56,12 +59,11 @@ public class VoteSession
 {
     private readonly Player _initiator;
     private readonly Timer _timer;
-    private HashSet<ulong> _yesVoters;
-    private HashSet<ulong> _noVoters;
-    private readonly string _startingMessage;
+    private readonly HashSet<ulong> _yesVoters;
+    private readonly HashSet<ulong> _noVoters;
     private int _timeLeft;
-    private int _voteThreshold; // don't want threshold changing as players leave or join
-    private string? _reason;
+    private readonly int _voteThreshold; // don't want threshold changing as players leave or join
+    private readonly string? _reason;
     
     // If true, vote will pass ONLY IF it reaches threshold.
     // If false, vote will pass if it reaches threshold OR runs out of time and YES votes is greater than NO votes
@@ -72,15 +74,15 @@ public class VoteSession
     private float _previousTimeSinceLevelLoad;
 
     // Function to call when vote succeeds
-    private Action _action;
+    private readonly Action _action;
     
-    private static readonly int DEFAULT_VOTING_WINDOW = NucleiConfig.KickTimeout!.Value; 
+    private static readonly int DefaultVotingWindow = NucleiConfig.KickTimeout!.Value; 
 
     public VoteSession(Player initiator, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true, string? reason = null)
     {
         _initiator = initiator;
         _voteThreshold = VoteThreshold();
-        _timeLeft = DEFAULT_VOTING_WINDOW;
+        _timeLeft = DefaultVotingWindow;
         _timer = new Timer(1000);
         _timer.Elapsed += OnTimerTick;
         _yesVoters = [];
@@ -104,6 +106,7 @@ public class VoteSession
     /// Will add a vote to the vote kick if the player is not already in the hashset.
     /// </summary>
     /// <param name="voter"></param>
+    /// <param name="votedYes"></param>
     public void AddVote(Player voter, bool votedYes)
     {
         if (votedYes)
@@ -174,12 +177,11 @@ public class VoteSession
             else FinaliseVote(_yesVoters.Count > _noVoters.Count);
         }
     }
-    
-    
+
+
     /// <summary>
     /// Checks if vote threshold is met, then calls the action function associated
     /// </summary>
-    /// <param name="sender"></param>
     private void FinaliseVote(bool thresholdMet)
     {
         _timer.Stop();
@@ -203,7 +205,7 @@ public class VoteSession
 
     private int VoteThreshold()
     {
-        var threshold = NucleiConfig.KickThreshold.Value;
+        var threshold = NucleiConfig.KickThreshold!.Value;
         var totalPlayers = Globals.AuthenticatedPlayers.Count;
         return (int)(totalPlayers * threshold);
     }

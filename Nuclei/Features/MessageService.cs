@@ -22,7 +22,7 @@ public static class MessageService
     ///     The type of the message to send. Likely only supports messages with the
     ///     <see cref="NetworkMessageAttribute" />.
     /// </typeparam>
-    public static void SendToAll<T>(T message, bool authenticatedOnly = false, bool excludeLocalPlayer = false, Channel channel = Channel.Reliable)
+    private static void SendToAll<T>(T message, bool authenticatedOnly = false, bool excludeLocalPlayer = false, Channel channel = Channel.Reliable)
     {
         Globals.NetworkManagerNuclearOptionInstance.Server.SendToAll(message, authenticatedOnly, excludeLocalPlayer, channel);
     }

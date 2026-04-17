@@ -1,5 +1,6 @@
 using System;
 using Nuclei.Enums;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Nuclei.Helpers;
 

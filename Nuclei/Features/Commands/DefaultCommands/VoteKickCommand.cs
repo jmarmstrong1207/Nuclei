@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using BepInEx.Configuration;
-using Mirage;
 using NuclearOption.Networking;
 using Nuclei.CritzOS;
 using Nuclei.CritzOS.Features;
@@ -43,28 +40,28 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
     {
         int idx = int.Parse(args[0]);
         string reason = string.Join(" ", args.Skip(1).ToArray());
-        if (!PlayerUtils.TryFindPlayerbyID(idx, out Player? targetPlayer))
+        if (!PlayerUtils.TryFindPlayerbyID(idx, out var targetPlayer))
         {
             ChatService.SendPrivateChatMessage("Could not find player to votekick.", player);
+            return false;
         }
 
-        Action a = () =>
+        void Action()
         {
-            ReportCommandService.SendReport($"{player.PlayerName} ({CritzOSGlobals.ServerName}",
-                $"Votekick for {targetPlayer!.PlayerName} has passed. Reason: {reason}");
+            ReportCommandService.SendReport($"{player.PlayerName} ({CritzOSGlobals.ServerName}", $"Votekick for {targetPlayer.PlayerName} has passed. Reason: {reason}");
             CritzOSDB.LogVoteKick(targetPlayer, player, reason);
             PlayerUtils.KickPlayer(targetPlayer);
-        };
+        }
 
         if (VoteService.CanStartVote())
         {
-            string startingMessage = $"A vote to kick {targetPlayer!.PlayerName} has been started.";
+            var startingMessage = $"A vote to kick {targetPlayer!.PlayerName} has been started.";
             ReportCommandService.SendReport($"{player.PlayerName} ({CritzOSGlobals.ServerName}",
                 startingMessage);
             ChatService.SendChatMessage(startingMessage);
             ChatService.SendChatMessage($"Reason: {reason}");
             
-            VoteService.StartVote(player, a, false, false);
+            VoteService.StartVote(player, Action, false, false);
             return true;
         }
         else

@@ -3,6 +3,9 @@ using Nuclei.Helpers;
 
 namespace Nuclei.Features;
 
+/// <summary>
+/// Ban Service class
+/// </summary>
 public static class BanService
 {
     /// <summary>

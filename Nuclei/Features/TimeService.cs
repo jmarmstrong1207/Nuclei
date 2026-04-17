@@ -14,7 +14,7 @@ public class TimeService : MonoBehaviour
     /// <summary>
     ///     The singleton instance of the time service.
     /// </summary>
-    public static TimeService? Instance { get; private set; }
+    private static TimeService? Instance { get; set; }
 
     /// <summary>
     ///     Initializes the time service.

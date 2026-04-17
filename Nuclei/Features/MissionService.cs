@@ -4,7 +4,6 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using NuclearOption.DedicatedServer;
 using NuclearOption.Networking;
-using NuclearOption.Networking.Lobbies;
 using NuclearOption.SavedMission;
 using NuclearOption.SavedMission.ObjectiveV2;
 using Nuclei.Enums;
@@ -22,12 +21,12 @@ public static class MissionService
     /// <summary>
     ///     The last mission that was started.
     /// </summary>
-    public static Mission? LastMission { get; private set; }
+    private static Mission? LastMission { get; set; }
 
     /// <summary>
     ///     The preselected mission key.
     /// </summary>
-    public static MissionKey? PreselectedMissionKey { get; private set; }
+    private static MissionKey? PreselectedMissionKey { get; set; }
 
     /// <summary>
     ///     The current mission.
@@ -37,7 +36,7 @@ public static class MissionService
     /// <summary>
     ///     The current mission runner.
     /// </summary>
-    public static MissionRunner? CurrentMissionRunner => MissionManager.Runner;
+    private static MissionRunner? CurrentMissionRunner => MissionManager.Runner;
 
     /// <summary>
     ///     The current mission objectives.
@@ -57,14 +56,14 @@ public static class MissionService
     /// <summary>
     ///     Gets all Mission Keys as an IEnumerable.
     /// </summary>
-    public static IEnumerable<MissionKey> AllMissionKeys => MissionGroup.All.GetMissions();
+    private static IEnumerable<MissionKey> AllMissionKeys => MissionGroup.All.GetMissions();
 
     /// <summary>
     ///     Gets a mission by its key.
     /// </summary>
     /// <param name="key"> The mission key object of the mission. </param>
     /// <returns> The mission if found, otherwise null. </returns>
-    public static Mission? GetMission(MissionKey key)
+    private static Mission? GetMission(MissionKey key)
     {
         return key.TryLoad(out var mission, out var errorString) ? mission : throw new Exception(errorString);
     }
@@ -74,7 +73,7 @@ public static class MissionService
     /// </summary>
     /// <param name="mission"> The mission object </param>
     /// <returns> The mission if found, otherwise null. </returns>
-    public static MissionKey GetMissionKey(Mission mission)
+    private static MissionKey GetMissionKey(Mission mission)
     {
         return AllMissionKeys.First(k => k.Name == mission.Name);
     }
@@ -83,7 +82,7 @@ public static class MissionService
     ///     Gets a list of Mission Keys filtered by the config.
     /// </summary>
     /// <returns> The list of mission keys. </returns>
-    public static MissionKey[] GetConfigMissionKeys()
+    private static MissionKey[] GetConfigMissionKeys()
     {
         return NucleiConfig.MissionsList.Select(m => AllMissionKeys.First(k => k.Name == m)).ToArray();
     }
@@ -94,7 +93,7 @@ public static class MissionService
     /// <param name="allowRepeat"> Whether to allow the same mission to be returned multiple times in a row. </param>
     /// <param name="allMissions"> Whether to get all missions or only the ones in the config. </param>
     /// <returns> The mission if found, otherwise null. </returns>
-    public static Mission? GetRandomMission(bool allowRepeat = false, bool allMissions = false)
+    private static Mission? GetRandomMission(bool allowRepeat = false, bool allMissions = false)
     {
         return GetRandomMission(allMissions ? AllMissionKeys.ToArray() : GetConfigMissionKeys(), allowRepeat);
     }
@@ -104,7 +103,7 @@ public static class MissionService
     /// </summary>
     /// <param name="allMissions"> Whether to allow getting from all missions or only the ones in the config. </param>
     /// <returns> The mission if found, otherwise null. </returns>
-    public static Mission? GetNextSequentialMission(bool allMissions = false)
+    private static Mission? GetNextSequentialMission(bool allMissions = false)
     {
         var missionKeys = allMissions ? AllMissionKeys.ToArray() : GetConfigMissionKeys();
         if (LastMission == null)
@@ -146,7 +145,7 @@ public static class MissionService
     /// <param name="missions"> The list of missions to choose from. </param>
     /// <param name="allowRepeat"> Whether to allow the same mission to be returned multiple times in a row. </param>
     /// <returns></returns>
-    public static Mission? GetRandomMission(MissionKey[] missions, bool allowRepeat = false)
+    private static Mission? GetRandomMission(MissionKey[] missions, bool allowRepeat = false)
     {
         if (missions.Length == 0)
         {
@@ -171,6 +170,10 @@ public static class MissionService
         Nuclei.Logger?.LogDebug($"Set mission: {mission.Name}");
     }
 
+    /// <summary>
+    /// gets current mission
+    /// </summary>
+    /// <returns></returns>
     public static Mission GetCurrentMission()
     {
         return MissionManager.CurrentMission;
@@ -185,11 +188,19 @@ public static class MissionService
         Globals.DedicatedServerManagerInstance.SetNextMission(option);
     }
     
+    /// <summary>
+    /// Gets current mission's max time
+    /// </summary>
+    /// <returns></returns>
     public static float GetCurrentMissionMaxTime()
     {
         return Globals.DedicatedServerManagerInstance.CurrentMissionOption.MaxTime;
     }
     
+    /// <summary>
+    /// Get current mission time
+    /// </summary>
+    /// <returns></returns>
     public static float GetCurrentMissionTime()
     {
         return Time.timeSinceLevelLoad;
@@ -223,7 +234,7 @@ public static class MissionService
     /// </summary>
     /// <param name="mission"> The mission to return. </param>
     /// <returns> Whether the mission was found. </returns>
-    public static bool TryGetConsumePreselectedMission(out Mission? mission)
+    private static bool TryGetConsumePreselectedMission(out Mission? mission)
     {
         if (PreselectedMissionKey == null)
         {
@@ -296,6 +307,10 @@ public static class MissionService
         }
     }
 
+    /// <summary>
+    /// Get all missions in queue
+    /// </summary>
+    /// <returns></returns>
     public static List<MissionOptions> GetAllMissions()
     {
         return Globals.DedicatedServerManagerInstance.missionRotation.allMissions;

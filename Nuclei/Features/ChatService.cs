@@ -102,27 +102,33 @@ public static class ChatService
     /// <summary>
     ///     Sends the message of the day to all clients.
     /// </summary>
-    private static int i = 0;
+    private static int _i = 0;
 
-    private static List<string> MotdList = [];
+    private static List<string> _motdList = [];
 
+    /// <summary>
+    /// Update the motd list
+    /// </summary>
     public static void UpdateMotD()
     {
         var json = File.ReadAllText("motd.json");
         var parsedJson = System.Text.Json.Nodes.JsonNode.Parse(json)!;
 
-        MotdList = parsedJson["MotdList"]!.AsArray().GetValues<string>().ToList();
+        _motdList = parsedJson["MotdList"]!.AsArray().GetValues<string>().ToList();
         
         Nuclei.Logger?.LogInfo("Updated motd list:");
-        foreach (var motd in MotdList)
+        foreach (var motd in _motdList)
             Nuclei.Logger?.LogInfo(motd);
 
     }
+    /// <summary>
+    /// Send MotD
+    /// </summary>
     public static void SendMotD()
     {
-        string actualMotD = MotdList[i++]; 
+        string actualMotD = _motdList[_i++]; 
         
-        if (i >= MotdList.Count) i = 0;
+        if (_i >= _motdList.Count) _i = 0;
         
         if (!CanSend(actualMotD, ignoreRateLimit: true))
         {

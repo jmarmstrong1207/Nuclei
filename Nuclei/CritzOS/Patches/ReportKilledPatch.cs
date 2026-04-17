@@ -1,11 +1,14 @@
 using HarmonyLib;
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Nuclei.CritzOS.Features;
+// ReSharper disable all
 
 namespace Nuclei.CritzOS.Patches;
 
+/// <summary>
+/// Code to detect kills, primarily who TK'ed what/who
+/// </summary>
 [HarmonyPatch(typeof(Unit), nameof(Unit.ReportKilled))]
 [HarmonyPriority(Priority.First)]
 [HarmonyWrapSafe]
@@ -14,6 +17,7 @@ public static class ReportKilledPatch
     static readonly FieldInfo f_persistentID = AccessTools.Field(typeof(Unit), "persistentID");
     static readonly FieldInfo f_damageCredit = AccessTools.Field(typeof(Unit), "damageCredit");
     
+    // ReSharper disable once ArrangeTypeMemberModifiers
     static void Postfix(object __instance)
     {
         var victimPid = (PersistentID)f_persistentID.GetValue(__instance);

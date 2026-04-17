@@ -4,6 +4,8 @@ using HarmonyLib;
 using NuclearOption.SavedMission;
 using Nuclei.Features;
 using Nuclei.Helpers;
+// ReSharper disable InconsistentNaming
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 [HarmonyPriority(Priority.First)]
 [HarmonyWrapSafe]

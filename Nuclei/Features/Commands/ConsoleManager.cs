@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using BepInEx.Logging;
+// ReSharper disable ConvertToPrimaryConstructor
 
 namespace Nuclei.Features.Commands
 {

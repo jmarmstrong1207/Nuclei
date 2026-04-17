@@ -1,14 +1,14 @@
 ﻿using BepInEx.Configuration;
-using Cysharp.Threading.Tasks;
 using NuclearOption.Networking;
-using NuclearOption.Networking.Lobbies;
-using NuclearOption.SavedMission;
 using Nuclei.Enums;
-using Nuclei.Helpers;
-using System;
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace Nuclei.Features.Commands.DefaultCommands;
 
+/// <summary>
+/// Command to forcefully change to the next mission in queue
+/// </summary>
+/// <param name="config"></param>
 public class NextMissionCommand(ConfigFile config) : PermissionConfigurableCommand(config)
 {
     public override string Name => "nextmission";

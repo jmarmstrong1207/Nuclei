@@ -70,7 +70,7 @@ public static class CommandService
     /// <param name="commandName"> The name of the command. </param>
     /// <param name="args"> The arguments for the command. </param>
     /// <returns></returns>
-    public static bool TryExecuteCommand(Player player, string commandName, string[] args)
+    private static bool TryExecuteCommand(Player player, string commandName, string[] args)
     {
         if (!TryGetCommand(commandName, out var command))
         {

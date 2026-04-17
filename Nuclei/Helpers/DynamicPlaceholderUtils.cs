@@ -1,5 +1,6 @@
 using NuclearOption.Networking;
 using Nuclei.Features;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Nuclei.Helpers;
 

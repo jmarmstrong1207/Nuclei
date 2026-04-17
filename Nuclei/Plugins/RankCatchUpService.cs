@@ -1,10 +1,12 @@
 using NuclearOption.Networking;
+using Nuclei.Features;
 using Nuclei.Helpers;
 using UnityEngine;
-namespace Nuclei.Features;
+
+namespace Nuclei.Plugins;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
-public class RankCatchUpService
+public static class RankCatchUpService
 {
     public static void CatchUpPlayer(Player player)
     {

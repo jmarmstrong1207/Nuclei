@@ -11,7 +11,6 @@ namespace Nuclei.Features.Commands.DefaultCommands;
 
 public class VoteSkipCommand(ConfigFile config) : PermissionConfigurableCommand(config)
 {
-    private static List<MissionOptions>? _fetchedMissions;
     public override string Name { get; } = "voteskip";
     public override string Description { get; } = "Let you skip this mission by voting";
     public override string Usage { get; } = "voteskip to initiate a vote to skip the current mission";
@@ -25,13 +24,14 @@ public class VoteSkipCommand(ConfigFile config) : PermissionConfigurableCommand(
 
     public override bool Execute(Player player, string[] args)
     {
-        Action a = () =>
+        void Action()
         {
             ReportCommandService.LogChatMessage($"{player.PlayerName}", "Voteskip has passed");
             CritzOSDB.LogVoteskipSuccess(player.SteamID, MissionService.GetCurrentMission());
-            
+
             MissionService.StartNextMission(player);
-        };
+        }
+
         if (VoteService.CanStartVote())
         {
             var startingMessage = "A vote to skip the current mission has been started";
@@ -41,7 +41,7 @@ public class VoteSkipCommand(ConfigFile config) : PermissionConfigurableCommand(
             
             VoteService.StartVote(
                 player, 
-                a,
+                Action,
                 true,
                 false
             );

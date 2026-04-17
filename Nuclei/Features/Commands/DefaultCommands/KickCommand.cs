@@ -1,6 +1,5 @@
 using System;
 using BepInEx.Configuration;
-using Cysharp.Threading.Tasks;
 using NuclearOption.DedicatedServer.Commands;
 using NuclearOption.Networking;
 using Nuclei.CritzOS.Features;
@@ -33,13 +32,16 @@ public class KickCommand(ConfigFile config) : PermissionConfigurableCommand(conf
         {
             ChatService.SendPrivateChatMessage("Could not find player to votekick.", player);
             Nuclei.Logger?.LogWarning($"Ban command run. Player [{target}] not found.");
+            return false;
         }
 
-        CommandMessage msg = new CommandMessage();
-        msg.name = "kick-player";
-        msg.arguments = new string[]
+        var msg = new CommandMessage
         {
-            Convert.ToString(targetPlayer.SteamID)
+            name = "kick-player",
+            arguments =
+            [
+                Convert.ToString(targetPlayer!.SteamID)
+            ]
         };
 
         if (ServerRemoteCommands.Instance.FindAndRunCommand(msg).StatusCode == StatusCode.Success)
@@ -64,7 +66,7 @@ public class KickCommand(ConfigFile config) : PermissionConfigurableCommand(conf
 
         if (PlayerUtils.TryFindPlayer(target, out var targetPlayer))
         {
-            PlayerUtils.KickPlayer(targetPlayer);
+            PlayerUtils.KickPlayer(targetPlayer!);
             Nuclei.Logger?.LogInfo($"Player {target} was kicked from the server.");
             ChatService.SendChatMessage($"Player {target} was kicked from the server.");
             return true;

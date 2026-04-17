@@ -5,7 +5,6 @@ using NuclearOption.DedicatedServer;
 using NuclearOption.Networking;
 using Nuclei.CritzOS.Features;
 using Nuclei.Enums;
-using Nuclei.Helpers;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace Nuclei.Features.Commands.DefaultCommands;
@@ -56,15 +55,14 @@ public class VoteMissionCommand(ConfigFile config) : PermissionConfigurableComma
             return false;
         }
 
-        Action a = () =>
+        void Action()
         {
-            var m = $"Mission vote for {_fetchedMissions[idx - 1].Key.Name} has passed";
-            ReportCommandService.LogChatMessage($"{player.PlayerName}",
-                m);
-            
+            var m = $"Mission vote for {_fetchedMissions![idx - 1].Key.Name} has passed";
+            ReportCommandService.LogChatMessage($"{player.PlayerName}", m);
+
             MissionService.SetNextMission(_fetchedMissions![idx - 1]);
-        };
-        
+        }
+
         if (VoteService.CanStartVote())
         {
             var startingMessage = $"Mission vote for {_fetchedMissions[idx - 1].Key.Name} has been started";
@@ -73,7 +71,7 @@ public class VoteMissionCommand(ConfigFile config) : PermissionConfigurableComma
             ChatService.SendChatMessage(startingMessage);
             VoteService.StartVote(
                 player,
-                a,
+                Action,
                 false,
                 false
             );
