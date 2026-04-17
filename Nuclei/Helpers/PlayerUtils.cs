@@ -160,12 +160,13 @@ public static class PlayerUtils
 
     public static bool TryFindPlayerbyID(int i, out Player? player)
     {
-        var playerList = new List<INetworkPlayer>(Globals.AuthenticatedPlayers).Where(ip => PlayerHelper.TryGetPlayer(ip, out Player _)).Select(ip =>
+        List<Player> playerList = new List<INetworkPlayer>(Globals.AuthenticatedPlayers).Where(ip => ip != null && PlayerHelper.TryGetPlayer(ip, out Player _)).Select(ip =>
         {
             ip.TryGetPlayer(out var p);
             return p;
-        }).ToList();
-        List<Player> l = playerList.Where(p => p.PlayerName.StartsWith($"[{i}]")).ToList();
+        }).ToList()!;
+        
+        var l = playerList.Where(p => p.PlayerName.StartsWith($"[{i}]")).ToList();
         switch (l.Count)
         {
             case 0:
