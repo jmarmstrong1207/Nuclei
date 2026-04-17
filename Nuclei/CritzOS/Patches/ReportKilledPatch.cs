@@ -60,7 +60,7 @@ public static class ReportKilledPatch
             {
                 ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}",
                     $"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) teamkilled player {victimPlayer.Aircraft.unitName}!");
-                CritzOSDB.logPlayerTeamkill(atkPlayer, victimPlayer);
+                CritzOSDB.LogPlayerTeamkill(atkPlayer, victimPlayer);
                 Nuclei.Logger?.LogInfo($"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) teamkilled player {victimPlayer.Aircraft.unitName}!");
             }
             else
@@ -75,7 +75,7 @@ public static class ReportKilledPatch
             if (victimPlayer == null)
             {
                 ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}", $"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) killed friendly {victimPU.unitName}!");
-                CritzOSDB.logAITeamkill(atkPlayer, victimPU);
+                CritzOSDB.LogAITeamkill(atkPlayer, victimPU);
                 Nuclei.Logger?.LogInfo($"{atkPlayer.Aircraft.unitName} (||{atkPlayer.SteamID}||) killed friendly {victimPU.unitName}!");
             }
         }
