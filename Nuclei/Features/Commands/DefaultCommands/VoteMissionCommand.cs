@@ -61,6 +61,7 @@ public class VoteMissionCommand(ConfigFile config) : PermissionConfigurableComma
             ReportCommandService.LogChatMessage($"{player.PlayerName}", m);
 
             MissionService.SetNextMission(_fetchedMissions![idx - 1]);
+            _fetchedMissions = null;
         }
 
         if (VoteService.CanStartVote())
@@ -79,9 +80,9 @@ public class VoteMissionCommand(ConfigFile config) : PermissionConfigurableComma
         else
         {
             ChatService.SendPrivateChatMessage("Cannot start a new mission vote, please wait for current vote to expire.", player);
+            _fetchedMissions = null;
             return false;
         }
-        _fetchedMissions = null;
         return true;
     }
 
