@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Timers;
 using BepInEx;
 using NuclearOption.Networking;
-using NuclearOption.SavedMission;
 using Nuclei.CritzOS.Features;
 using Nuclei.Helpers;
-using UnityEngine;
 
 namespace Nuclei.Features;
 
@@ -21,17 +19,25 @@ public static class VoteService
     }
 
     /// <summary>
-    /// start a vote-kick session for target player
+    /// start a vote session for target player
     /// </summary>
     /// <param name="initiator"></param>
     /// <param name="action"></param>
     /// <param name="cancelIfMissionChanges"></param>
     /// <param name="thresholdByFullServer"></param>
     /// <param name="reason"></param>
+    /// <param name="targetName">The name of the target for the vote (player name, mission name)</param>
     /// <returns></returns>
-    public static void StartVote(Player initiator, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true, string? reason = null)
+    public static void StartVote(
+        Player initiator, 
+        Action action, 
+        bool cancelIfMissionChanges, 
+        bool thresholdByFullServer = true, 
+        string? reason = null,
+        string? targetName = null
+        )
     {
-        ActiveVote = new VoteSession(initiator, action, cancelIfMissionChanges, thresholdByFullServer, reason);
+        ActiveVote = new VoteSession(initiator, action, cancelIfMissionChanges, thresholdByFullServer, reason, targetName);
         ActiveVote.Start();
     }
 
@@ -55,7 +61,9 @@ public static class VoteService
     }
 }
 
-// Usually only used by VoteService
+// Usually only used by VoteService. Handles generic voting sessions. the command should announce what the vote is about
+// there is a 'reason' field in this class that will announce the optional reason every few ticks in the timer
+// If vote passes, it will call the provided '_action'
 public class VoteSession
 {
     private readonly Player _initiator;
@@ -65,6 +73,7 @@ public class VoteSession
     private int _timeLeft;
     private readonly int _voteThreshold; // don't want threshold changing as players leave or join
     private readonly string? _reason;
+    private readonly string? _targetName;
     
     // If true, vote will pass ONLY IF it reaches threshold.
     // If false, vote will pass if it reaches threshold OR runs out of time and YES votes is greater than NO votes
@@ -72,14 +81,12 @@ public class VoteSession
 
     public bool CancelIfMissionChanges { get; }
 
-    private float _previousTimeSinceLevelLoad;
-
     // Function to call when vote succeeds
     private readonly Action _action;
 
     private static readonly int DefaultVotingWindow = NucleiConfig.KickTimeout!.Value; 
 
-    public VoteSession(Player initiator, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true, string? reason = null)
+    public VoteSession(Player initiator, Action action, bool cancelIfMissionChanges, bool thresholdByFullServer = true, string? reason = null, string? targetName= null)
     {
         _initiator = initiator;
         _voteThreshold = VoteThreshold();
@@ -92,13 +99,20 @@ public class VoteSession
         _thresholdByFullServer = thresholdByFullServer;
         CancelIfMissionChanges = cancelIfMissionChanges;
         _reason = reason;
+        _targetName = targetName;
+    }
+
+    private void _sendReminderMessage()
+    {
+        ChatService.SendChatMessage($"Type '{NucleiConfig.CommandPrefixChar}y' for yes, '{NucleiConfig.CommandPrefixChar}n' for no.");
+        ChatService.SendChatMessage($"({_yesVoters.Count}/{_voteThreshold} YES votes, {_noVoters.Count}/{_voteThreshold} NO votes).");
+        ChatService.SendChatMessage($"Vote expires in {_timeLeft} seconds.");
+        ChatService.SendChatMessage($"Target: '{_targetName}', Reason: {_reason}");
     }
 
     public void Start()
     {
-        ChatService.SendChatMessage($"Type '{NucleiConfig.CommandPrefixChar}y' to vote yes, '{NucleiConfig.CommandPrefixChar}n' to vote no. You have {_timeLeft} seconds to cast your vote. ({_yesVoters.Count}/{_voteThreshold} YES votes, {_noVoters.Count}/{_voteThreshold} NO votes).");
-        if (!_reason.IsNullOrWhiteSpace())
-            ChatService.SendChatMessage($"Reason: {_reason}");
+        _sendReminderMessage();
         _timer.Start();
         AddVote(_initiator, true);
     }
@@ -114,8 +128,8 @@ public class VoteSession
         {
             if (_yesVoters.Add(voter.SteamID))
             {
-                ChatService.SendChatMessage(
-                    $"{voter.PlayerName} has voted. ({_yesVoters.Count}/{_voteThreshold} YES votes, {_noVoters.Count}/{_voteThreshold} NO votes).");
+                // Removed due to being spammy
+                //ChatService.SendChatMessage($"{voter.PlayerName} has voted.");
 
                 if (_yesVoters.Count >= _voteThreshold)
                 {
@@ -132,8 +146,9 @@ public class VoteSession
         {
             if (_noVoters.Add(voter.SteamID))
             {
-                ChatService.SendChatMessage(
-                    $"{voter.PlayerName} has voted. ({_yesVoters.Count}/{_voteThreshold} YES votes, {_noVoters.Count}/{_voteThreshold} NO votes).");
+                // Removed due to being spammy
+                //ChatService.SendChatMessage(
+                    //$"{voter.PlayerName} has voted. ({_yesVoters.Count}/{_voteThreshold} YES votes, {_noVoters.Count}/{_voteThreshold} NO votes).");
 
                 if (_noVoters.Count >= _voteThreshold)
                 {
@@ -157,9 +172,9 @@ public class VoteSession
     {
         _timeLeft--;
 
-        if ((_timeLeft % 10 == 0 && _timeLeft > 0) || _timeLeft < 10) // every ten seconds or below 10 seconds every tick
+        if ((_timeLeft % 30 == 0 && _timeLeft > 0) || _timeLeft < 10) // every ten seconds or below 10 seconds every tick
         {
-            ChatService.SendChatMessage($"Vote ends in {_timeLeft} seconds. Type `{NucleiConfig.CommandPrefixChar}y` to vote YES, '{NucleiConfig.CommandPrefixChar}n' for NO. ({_yesVoters.Count}/{_voteThreshold} YES votes, {_noVoters.Count}/{_voteThreshold} NO votes).");
+            _sendReminderMessage();
             if (!_reason.IsNullOrWhiteSpace())
                 ChatService.SendChatMessage($"Reason: {_reason}");
         }

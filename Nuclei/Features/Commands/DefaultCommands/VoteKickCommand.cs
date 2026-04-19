@@ -46,7 +46,7 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
             return false;
         }
 
-        void Action()
+        void OnPass()
         {
             ReportCommandService.SendReport($"{player.PlayerName} ({CritzOSGlobals.ServerName}", $"Votekick for {targetPlayer.PlayerName} has passed. Reason: {reason}");
             CritzOSDB.LogVoteKick(targetPlayer, player, reason);
@@ -55,13 +55,12 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
 
         if (VoteService.CanStartVote())
         {
-            var startingMessage = $"A vote to kick {targetPlayer!.PlayerName} has been started.";
+            var startingMessage = $"A vote to kick {targetPlayer!.PlayerName} has started.";
             ReportCommandService.SendReport($"{player.PlayerName} ({CritzOSGlobals.ServerName}",
                 startingMessage);
             ChatService.SendChatMessage(startingMessage);
-            ChatService.SendChatMessage($"Reason: {reason}");
             
-            VoteService.StartVote(player, Action, false, false);
+            VoteService.StartVote(player, OnPass, false, false, reason, player.PlayerName);
             return true;
         }
         else
