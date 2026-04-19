@@ -28,7 +28,7 @@ public class MissionSaveLoadPatches
         RandomizeWeather(ref mission);
         ModifyDifficulty(ref mission);
         CancelVote();
-        ReportCommandService.LogChatMessage(CritzOSGlobals.ServerName,$"LOADING MISSION {mission.Name}");
+        ReportCommandService.LogChatMessage($"CritzOS {CritzOSGlobals.ServerName}",$"LOADING MISSION {mission.Name}");
         //RandomizeTeam(ref mission);
     }
 

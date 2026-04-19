@@ -55,7 +55,7 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
 
         if (VoteService.CanStartVote())
         {
-            var startingMessage = $"A vote to kick {targetPlayer!.PlayerName} has started.";
+            var startingMessage = $"A vote to kick {targetPlayer!.PlayerName} has started. Reason: {reason}";
             ReportCommandService.SendReport($"{player.PlayerName} ({CritzOSGlobals.ServerName}",
                 startingMessage);
             ChatService.SendChatMessage(startingMessage);
