@@ -43,7 +43,7 @@ public class VoteSkipCommand(ConfigFile config) : PermissionConfigurableCommand(
                 player, 
                 Action,
                 true,
-                true
+                false
             );
         }
         else
