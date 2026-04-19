@@ -27,17 +27,12 @@ public class Nuclei : BaseUnityPlugin
     internal new static ManualLogSource? Logger { get; private set; }
     private static Harmony? Harmony { get; set; }
     private static bool IsPatched { get; set; }
-    private ConsoleManager? _console;
     
     private void Awake()
     {
         Instance = this;
         
         Logger = base.Logger;
-
-        var unityCtx = SynchronizationContext.Current ?? new SynchronizationContext();
-        _console = new ConsoleManager(unityCtx, HandleConsoleCommand);
-        //_console.Start();
         
         Logger?.LogInfo($"Loading {PluginInfo.PLUGIN_NAME} v{PluginInfo.PLUGIN_VERSION}...");
         
@@ -144,12 +139,6 @@ public class Nuclei : BaseUnityPlugin
         PlayerEvents.PlayerJoined += OnPlayerJoin;
     }
 
-    private void OnDestroy()
-    {
-        //UnpatchSelf();
-        //_console?.Stop();
-    }
-
     // TODO: Move these somewhere else?
     private static void HandleConsoleCommand(string rawLine, string[] args)
     {
@@ -160,10 +149,9 @@ public class Nuclei : BaseUnityPlugin
         CommandService.TryExecuteCommand(cmd, args.Skip(1).ToArray());
     }
 
-    private void OnPlayerJoin(Player player)
+    private static void OnPlayerJoin(Player player)
     {
         Nuclei.Logger?.LogInfo($"{player.PlayerName} joined the game! SteamID: {player.SteamID}");
-        BanService.VerifyNotBanned(player);
         PlayerUtils.ApplyOrRemoveStaffTag(player);
         PlayerUtils.ApplyID(player);
         

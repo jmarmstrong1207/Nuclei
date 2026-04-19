@@ -8,14 +8,8 @@ namespace Nuclei.Events;
 /// </summary>
 public static class ServerEvents
 {
-    /// <summary>
-    ///     Event handler for when the server starts.
-    /// </summary>
-    public static event Action? ServerStarted;
-
     internal static void OnServerStarted()
     {
-        ServerStarted?.Invoke();
         TimeService.Initialize();
     }
 

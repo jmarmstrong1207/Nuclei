@@ -79,67 +79,6 @@ public static class MissionService
     }
 
     /// <summary>
-    ///     Gets a list of Mission Keys filtered by the config.
-    /// </summary>
-    /// <returns> The list of mission keys. </returns>
-    private static MissionKey[] GetConfigMissionKeys()
-    {
-        return NucleiConfig.MissionsList.Select(m => AllMissionKeys.First(k => k.Name == m)).ToArray();
-    }
-
-    /// <summary>
-    ///     Gets a random mission from the list of all missions. (Not filtered by the config)
-    /// </summary>
-    /// <param name="allowRepeat"> Whether to allow the same mission to be returned multiple times in a row. </param>
-    /// <param name="allMissions"> Whether to get all missions or only the ones in the config. </param>
-    /// <returns> The mission if found, otherwise null. </returns>
-    private static Mission? GetRandomMission(bool allowRepeat = false, bool allMissions = false)
-    {
-        return GetRandomMission(allMissions ? AllMissionKeys.ToArray() : GetConfigMissionKeys(), allowRepeat);
-    }
-
-    /// <summary>
-    ///     Gets the next sequential mission to be played. Loops back around to the first mission if at the end.
-    /// </summary>
-    /// <param name="allMissions"> Whether to allow getting from all missions or only the ones in the config. </param>
-    /// <returns> The mission if found, otherwise null. </returns>
-    private static Mission? GetNextSequentialMission(bool allMissions = false)
-    {
-        var missionKeys = allMissions ? AllMissionKeys.ToArray() : GetConfigMissionKeys();
-        if (LastMission == null)
-            return GetMission(missionKeys[0]);
-        var index = Array.IndexOf(missionKeys, GetMissionKey(LastMission)) + 1;
-        if (index >= missionKeys.Length)
-            index = 0;
-        return GetMission(missionKeys[index]);
-    }
-
-    /// <summary>
-    ///     Gets the next mission to be played, based on the provided select mode.
-    /// </summary>
-    /// <param name="selectMode"> The mission select mode to use. </param>
-    /// <param name="allMissions"> Whether to allow getting from all missions or only the ones in the config. </param>
-    /// <returns> The mission if found, otherwise null. </returns>
-    public static Mission? GetNextMission(MissionSelectMode selectMode, bool allMissions = false)
-    {
-        if (TryGetConsumePreselectedMission(out var mission))
-            return mission;
-        
-        switch (selectMode)
-        {
-            case MissionSelectMode.Random:
-                return GetRandomMission(true, allMissions);
-            case MissionSelectMode.RandomNoRepeat:
-                return GetRandomMission(false, allMissions);
-            case MissionSelectMode.Sequential:
-                return GetNextSequentialMission(allMissions);
-            default:
-                Nuclei.Logger?.LogError("Invalid mission select mode. Defaulting to random.");
-                return GetRandomMission();
-        }
-    }
-
-    /// <summary>
     ///     Gets a random mission from the provided list of missions.
     /// </summary>
     /// <param name="missions"> The list of missions to choose from. </param>
@@ -204,20 +143,6 @@ public static class MissionService
     public static float GetCurrentMissionTime()
     {
         return Time.timeSinceLevelLoad;
-    }
-
-    /// <summary>
-    ///     Validates that the configured missions actually exist.
-    /// </summary>
-    public static bool ValidateMissionConfig()
-    {
-        var valid = true;
-        foreach (var missionName in NucleiConfig.MissionsList.Where(missionName => AllMissionKeys.All(k => k.Name != missionName)))
-        {
-            Nuclei.Logger?.LogError($"Mission '{missionName}' not found.");
-            valid = false;
-        }
-        return valid;
     }
 
     /// <summary>
@@ -314,5 +239,20 @@ public static class MissionService
     public static List<MissionOptions> GetAllMissions()
     {
         return Globals.DedicatedServerManagerInstance.missionRotation.allMissions;
+    }
+
+    public static void SendMissionReminder()
+    {
+        var currentMissionTime = Time.timeSinceLevelLoad;
+        var maxMissionTime = MissionService.GetCurrentMissionMaxTime();
+        ChatService.SendChatMessage($"Remaining mission time: {(int)((maxMissionTime - currentMissionTime)/60)} minutes");
+    }
+
+    public static void SendEndingMissionReminder()
+    {
+        var currentMissionTime = MissionService.GetCurrentMissionTime();
+        var maxMissionTime = MissionService.GetCurrentMissionMaxTime();
+        if (maxMissionTime > 0 && maxMissionTime - currentMissionTime < 120)
+            ChatService.SendChatMessage($"MISSION ENDING SOON! Remaining mission time: {(int)(maxMissionTime - currentMissionTime)/60} minutes");
     }
 }
