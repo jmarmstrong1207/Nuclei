@@ -43,6 +43,13 @@ public class MissionSaveLoadPatches
             f.addAIPerEnemyPlayer = 0.80f;
             f.AIAircraftLimit = 8;
         }
+
+        mission.missionSettings.nuclearEscalationThreshold =
+            Math.Max(mission.missionSettings.nuclearEscalationThreshold, 1681);
+
+        mission.missionSettings.strategicEscalationThreshold =
+            Math.Max(mission.missionSettings.strategicEscalationThreshold, 2500); 
+        
     }
 
     private static void RandomizeWeather(ref Mission mission)
