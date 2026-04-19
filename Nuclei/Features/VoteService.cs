@@ -215,7 +215,7 @@ public class VoteSession
     private int VoteThreshold()
     {
         var threshold = NucleiConfig.KickThreshold!.Value;
-        var totalPlayers = Globals.AuthenticatedPlayers.Count;
+        var totalPlayers = PlayerUtils.GetPlayerCount();
         Nuclei.Logger?.LogInfo($"VoteSession.VoteThreshold(): totalPlayers: {totalPlayers}, threshold: {threshold}");
         return (int)Math.Ceiling(totalPlayers * threshold);
     }

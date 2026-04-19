@@ -183,4 +183,8 @@ public static class PlayerUtils
         }
     }
 
+    public static float GetPlayerCount()
+    {
+        return Globals.AuthenticatedPlayers.Count;
+    }
 }
