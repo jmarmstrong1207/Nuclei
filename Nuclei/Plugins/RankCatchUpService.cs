@@ -21,38 +21,31 @@ public static class RankCatchUpService
         //int avgRank = (int)Globals.AuthenticatedPlayers.Select(x => x.GetPlayer()!.PlayerRank).Average();
 
         var rank = 0;
-        var allocation = 0f;
 
         if (percentComplete < .20) return;
         if (percentComplete >= .80)
         {
             rank = 5;
-            allocation = 400f;
         }
         else if (percentComplete >= .60) 
         {
             rank = 4;
-            allocation = 350f;
         }
         else if (percentComplete >= .40) 
         {
             rank = 3;
-            allocation = 300f;
         }
         else if (percentComplete >= .40) 
         {
             rank = 2;
-            allocation = 250f;
         }
         else if (percentComplete >= .20) 
         {
             rank = 1;
-            allocation = 200f;
         }
 
         if (player.PlayerRank > rank) return;
         player.SetRank(rank, false);
-        player.SetAllocation(player.Allocation + allocation);
-        ChatService.SendPrivateChatMessage($"Late join - You have been promoted to Rank {rank} with +${allocation}m", player);
+        ChatService.SendPrivateChatMessage($"Late join - You have been promoted to Rank {rank}! :)", player);
     }
 }
