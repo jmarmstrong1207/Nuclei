@@ -2,6 +2,8 @@ using System;
 using BepInEx.Logging;
 using HarmonyLib;
 using NuclearOption.SavedMission;
+using Nuclei.CritzOS;
+using Nuclei.CritzOS.Features;
 using Nuclei.Features;
 using Nuclei.Helpers;
 // ReSharper disable InconsistentNaming
@@ -26,6 +28,7 @@ public class MissionSaveLoadPatches
         RandomizeWeather(ref mission);
         ModifyDifficulty(ref mission);
         CancelVote();
+        ReportCommandService.LogChatMessage(CritzOSGlobals.ServerName,$"LOADING MISSION {mission.Name}");
         //RandomizeTeam(ref mission);
     }
 
