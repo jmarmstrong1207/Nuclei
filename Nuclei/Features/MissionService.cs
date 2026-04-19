@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Mirage;
 using NuclearOption.DedicatedServer;
 using NuclearOption.Networking;
 using NuclearOption.SavedMission;
@@ -254,5 +255,53 @@ public static class MissionService
         var maxMissionTime = MissionService.GetCurrentMissionMaxTime();
         if (maxMissionTime > 0 && maxMissionTime - currentMissionTime < 120)
             ChatService.SendChatMessage($"MISSION ENDING SOON! Remaining mission time: {(int)(maxMissionTime - currentMissionTime)/60} minutes");
+    }
+
+    // Will guarantee enough funds to provide the Regular Income set by the mission, until everyone is rank 3 or higher
+    public static void SetMinimumWage()
+    {
+        try
+        {
+            Nuclei.Logger?.LogInfo("Determining minimum wage set...");
+            HashSet<FactionHQ> h = new HashSet<FactionHQ>();
+            var players = Globals.AuthenticatedPlayers;
+            var playerCountUnderRank3 = 0;
+            foreach (INetworkPlayer item in players)
+            {
+                Player? p;
+                item.TryGetPlayer(out p);
+                if (p && p.PlayerRank <= 2)
+                {
+                    h.Add(p.HQ); // TODO: EXPENSIVE. FIND OUT HOW TO GET FACTION HQs BETTER
+                    playerCountUnderRank3++;
+                }
+            }
+
+            if (playerCountUnderRank3 == 0)
+            {
+                Nuclei.Logger?.LogInfo("Minimum wage won't be set");
+                return;
+            }
+
+            Nuclei.Logger?.LogInfo("Minimum wage will be set");
+            foreach (var allHQ in h)
+            {
+                var val = PlayerUtils.GetPlayerCount() * allHQ.regularIncome;
+                if (allHQ.factionFunds < val)
+                {
+                    allHQ.SetFunds(val); // TODO: MODULARIZE THIS
+                    Nuclei.Logger?.LogInfo($"Faction funds set to {val}");
+                    return;
+                }
+
+                Nuclei.Logger?.LogInfo($"Faction funds are above {val}. Not setting minimum.");
+            }
+
+
+        }
+        catch (Exception e)
+        {
+            Nuclei.Logger?.LogError(e);
+        }
     }
 }

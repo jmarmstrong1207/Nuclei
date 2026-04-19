@@ -1,4 +1,7 @@
 using System;
+using System.Linq;
+using Mirage;
+using NuclearOption.Networking;
 using Nuclei.Features;
 using Nuclei.Features.Commands;
 using Nuclei.Helpers;
@@ -24,11 +27,14 @@ public static class TimeEvents
     internal static void OnEveryMinute()
     {
         MissionService.SendEndingMissionReminder();
+        
+        MissionService.SetMinimumWage();
     }
 
     internal static void OnEvery10Minutes()
     {
         MissionService.SendMissionReminder();
+
     }
 
     internal static void OnEvery30Minutes()
