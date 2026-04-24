@@ -175,8 +175,6 @@ public class VoteSession
         if ((_timeLeft % 30 == 0 && _timeLeft > 0) || _timeLeft < 10) // every ten seconds or below 10 seconds every tick
         {
             _sendReminderMessage();
-            if (!_reason.IsNullOrWhiteSpace())
-                ChatService.SendChatMessage($"Reason: {_reason}");
         }
         
         if (_timeLeft <= 0)
