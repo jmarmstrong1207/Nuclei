@@ -216,6 +216,12 @@ public static class ReportCommandService
         message = Regex.Replace(message, @"@", "");
         return SendDiscordMessage(username, message, CritzOSGlobals.WebhookURL);
     }
+    
+    public static bool SendManualReport(string username, string message)
+    {
+        message = Regex.Replace(message, @"@", "");
+        return SendDiscordMessage(username, $"<@&1489759287936024726> {message}", CritzOSGlobals.ReportsChannelWebhookURL);
+    }
 
     public static bool LogChatMessage(string username, string message)
     {
