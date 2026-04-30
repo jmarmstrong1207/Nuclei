@@ -16,7 +16,7 @@ public class SetMissionCommand(ConfigFile config) : PermissionConfigurableComman
     public override string Name { get; } = "setmission";
     public override string Description { get; } = "Queue next mission";
     public override string Usage { get; } = $"{NucleiConfig.CommandPrefixChar}setmission to get list of missions. {NucleiConfig.CommandPrefixChar}setmission <number> to queue that mission";
-    public override PermissionLevel DefaultPermissionLevel { get; } = PermissionLevel.Everyone;
+    public override PermissionLevel DefaultPermissionLevel { get; } = PermissionLevel.Moderator;
 
     public override bool Validate(Player player, string[] args)
     {
@@ -58,6 +58,7 @@ public class SetMissionCommand(ConfigFile config) : PermissionConfigurableComman
         }
 
         var m = $"Mission '{_fetchedMissions![idx - 1].Key.Name}' has been queued";
+        ChatService.SendChatMessage(m);
         ReportCommandService.LogChatMessage($"{player.PlayerName}", m);
 
         MissionService.SetNextMission(_fetchedMissions![idx - 1]);

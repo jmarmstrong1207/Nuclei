@@ -11,7 +11,7 @@ namespace Nuclei.CritzOS.Features.Commands;
 /// <summary>
 ///     Command to ban a player from the server.
 /// </summary>
-public class updateMotdCommand(ConfigFile config) : PermissionConfigurableCommand(config)
+public class UpdateMotdCommand(ConfigFile config) : PermissionConfigurableCommand(config)
 {
     public override string Name { get; } = "updatemotd";
     public override string Description { get; } = "update motd";

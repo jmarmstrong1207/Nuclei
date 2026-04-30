@@ -242,14 +242,14 @@ public static class MissionService
         return Globals.DedicatedServerManagerInstance.missionRotation.allMissions;
     }
 
-    public static void SendMissionReminder()
+    internal static void SendMissionReminder()
     {
         var currentMissionTime = Time.timeSinceLevelLoad;
         var maxMissionTime = MissionService.GetCurrentMissionMaxTime();
         ChatService.SendChatMessage($"Remaining mission time: {(int)((maxMissionTime - currentMissionTime)/60)} minutes");
     }
 
-    public static void SendEndingMissionReminder()
+    internal static void SendEndingMissionReminder()
     {
         var currentMissionTime = MissionService.GetCurrentMissionTime();
         var maxMissionTime = MissionService.GetCurrentMissionMaxTime();
@@ -258,7 +258,7 @@ public static class MissionService
     }
 
     // Will guarantee enough funds to provide the Regular Income set by the mission, until everyone is rank 3 or higher
-    public static void SetMinimumWage()
+    internal static void SetMinimumWage()
     {
         try
         {
