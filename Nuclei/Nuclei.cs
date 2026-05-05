@@ -8,6 +8,7 @@ using NuclearOption.Networking;
 using Nuclei.CritzOS;
 using Nuclei.CritzOS.Features;
 using Nuclei.CritzOS.Features.Commands;
+using Nuclei.CritzOS.Patches.KillsLogging;
 using Nuclei.Events;
 using Nuclei.Features;
 using Nuclei.Features.Commands;
@@ -27,7 +28,17 @@ public class Nuclei : BaseUnityPlugin
     internal new static ManualLogSource? Logger { get; private set; }
     private static Harmony? Harmony { get; set; }
     private static bool IsPatched { get; set; }
+
+    /// <summary>
+    /// Weapon type storage for weapon kill detection.
+    /// </summary>
+    public static readonly UnitWeaponLogStorage WeaponStorage = new();
     
+    /// <summary>
+    /// Weapon name storage for shockwaves.
+    /// </summary>
+    public static readonly ShockwaveWeaponTypeStorage ShockwaveWeaponStorage = new();
+
     private void Awake()
     {
         Instance = this;

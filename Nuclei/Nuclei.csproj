@@ -66,6 +66,8 @@
         <Reference Include="Assembly-CSharp-firstpass" HintPath="$(NUCLEAR_OPTION_SERVER_REFERENCES)/Assembly-CSharp-firstpass.dll" Private="False" Publicize="True"/>
         <Reference Include="Microsoft.CSharp" />
         <Reference Include="UnityEngine" HintPath="$(NUCLEAR_OPTION_SERVER_REFERENCES)/UnityEngine.dll" Private="False" Publicize="True"/>
+        <Reference Include="UnityEngine.UI" HintPath="$(NUCLEAR_OPTION_SERVER_REFERENCES)/UnityEngine.UI.dll" Private="False" Publicize="True"/>
+        <Reference Include="Unity.RenderPipelines.Universal.Runtime" HintPath="$(NUCLEAR_OPTION_SERVER_REFERENCES)/Unity.RenderPipelines.Universal.Runtime.dll" Private="False" Publicize="True"/>
         <Reference Include="UnityEngine.CoreModule" HintPath="$(NUCLEAR_OPTION_SERVER_REFERENCES)/UnityEngine.CoreModule.dll" Private="False" Publicize="True"/>
         <Reference Include="UnityEngine.AudioModule" HintPath="$(NUCLEAR_OPTION_SERVER_REFERENCES)/UnityEngine.AudioModule.dll" Private="False" Publicize="True"/>
         <Reference Include="UnityEngine.PhysicsModule" HintPath="$(NUCLEAR_OPTION_SERVER_REFERENCES)/UnityEngine.PhysicsModule.dll" Private="False" Publicize="True"/>

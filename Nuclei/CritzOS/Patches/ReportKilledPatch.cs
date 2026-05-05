@@ -14,6 +14,7 @@ namespace Nuclei.CritzOS.Patches;
 [HarmonyWrapSafe]
 public static class ReportKilledPatch
 {
+    /*
     static readonly FieldInfo f_persistentID = AccessTools.Field(typeof(Unit), "persistentID");
     static readonly FieldInfo f_damageCredit = AccessTools.Field(typeof(Unit), "damageCredit");
     
@@ -84,4 +85,5 @@ public static class ReportKilledPatch
             }
         }
     }
+    */
 }
