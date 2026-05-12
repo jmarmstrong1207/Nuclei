@@ -29,7 +29,10 @@ public class MissionSaveLoadPatches
         ModifyDifficulty(ref mission);
         CancelVote();
         ReportCommandService.LogChatMessage($"CritzOS {CritzOSGlobals.ServerName}",$"LOADING MISSION {mission.Name}");
+        Nuclei.Nuclei.Logger?.LogInfo($"LOADING MISSION {mission.Name}");
         //RandomizeTeam(ref mission);
+
+        //RateService.Lock();
     }
 
     private static void CancelVote()
@@ -48,10 +51,10 @@ public class MissionSaveLoadPatches
         }
 
         mission.missionSettings.nuclearEscalationThreshold =
-            Math.Max(mission.missionSettings.nuclearEscalationThreshold, 1681);
+            Math.Max(mission.missionSettings.nuclearEscalationThreshold, 2100);
 
         mission.missionSettings.strategicEscalationThreshold =
-            Math.Max(mission.missionSettings.strategicEscalationThreshold, 2500); 
+            Math.Max(mission.missionSettings.strategicEscalationThreshold, 3000); 
         
     }
 
@@ -61,7 +64,7 @@ public class MissionSaveLoadPatches
         
         var rnd = new Random();
         mission.environment.timeOfDay = rnd.Next(3, 18);
-        mission.environment.timeFactor = 8f;
+        mission.environment.timeFactor = 0f;
         mission.environment.weatherIntensity = (float)(rnd.NextDouble() * 0.9);
         mission.environment.cloudAltitude = (float)(500 + rnd.NextDouble() * 1000);
         mission.environment.windSpeed = (float)(rnd.NextDouble() * 4);
