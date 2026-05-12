@@ -16,10 +16,16 @@ public class KickCommand(ConfigFile config) : PermissionConfigurableCommand(conf
 {
     public override string Name { get; } = "kick";
     public override string Description { get; } = "Kicks a player from the server.";
-    public override string Usage { get; } = "kick <player_name>";
+    public override string Usage { get; } = "kick <ID>";
 
     public override bool Validate(Player player, string[] args)
     {
+        if ((args.Length != 0 && !int.TryParse(args[0], out _)) || (args.Length != 0 && int.Parse(args[0]) <= 0))
+        {
+            ChatService.SendPrivateChatMessage("Number invalid. Please Try again.", player);
+            return false;
+        }
+        
         return args.Length == 1;
     }
 

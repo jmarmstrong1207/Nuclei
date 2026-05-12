@@ -7,6 +7,7 @@ namespace Nuclei.CritzOS;
 /// </summary>
 public static class CritzOSGlobals
 {
+    internal static readonly string ReportsChannelWebhookURL = Environment.GetEnvironmentVariable("ReportsChannelWebhookURL");
     internal static readonly string ServerName = Environment.GetEnvironmentVariable("serverName")!;
     internal static readonly string ConnectionString = Environment.GetEnvironmentVariable("connectionString")!;
     

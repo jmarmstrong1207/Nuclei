@@ -44,7 +44,7 @@ public static class NucleiConfig
     internal const bool DefaultRefreshServerNamePeriodically = true;
 
     internal static ConfigEntry<bool>? RandomizeWeather;
-    internal const bool DefaultRandomizeWeather = false;
+    internal const bool DefaultRandomizeWeather = true;
 
     internal static ConfigEntry<string>? CommandPrefix;
     internal const string DefaultCommandPrefix = "/";

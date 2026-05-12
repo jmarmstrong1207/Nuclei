@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using BepInEx.Configuration;
 using NuclearOption.Networking;
 using Nuclei.Enums;
@@ -13,12 +14,23 @@ namespace Nuclei.Features.Commands.DefaultCommands;
 public class BanCommand(ConfigFile config) : PermissionConfigurableCommand(config)
 {
     public override string Name { get; } = "ban";
-    public override string Description { get; } = "Bans a player from the server.";
-    public override string Usage { get; } = "ban <player_name> <reason>";
+    public override string Description { get; } = "Bans a player from the server by ID.";
+    public override string Usage { get; } = "ban <ID> <reason>";
 
     public override bool Validate(Player player, string[] args)
     {
-        return args.Length > 1;
+        if ((args.Length != 0 && !int.TryParse(args[0], out _)) || (args.Length != 0 && int.Parse(args[0]) <= 0))
+        {
+            ChatService.SendPrivateChatMessage("Invalid ID", player);
+            return false;
+        }
+        if (args.Length < 2)
+        {
+            ChatService.SendPrivateChatMessage("Please provide a reason.", player);
+            return false;
+        }
+
+        return true;
     }
 
     public override bool Execute(Player player, string[] args)
@@ -33,7 +45,7 @@ public class BanCommand(ConfigFile config) : PermissionConfigurableCommand(confi
             return false;
         }
 
-        var reason = $"Player: {targetPlayer!.PlayerName}, " + string.Join(" ", args).Substring(1);
+        var reason = $"Player: {targetPlayer!.PlayerName}, " + args.Skip(1);
         if (PlayerUtils.BanPlayer(targetPlayer, reason))
         {
             ChatService.SendPrivateChatMessage($"Player {targetPlayer.PlayerName} has been banned", player);

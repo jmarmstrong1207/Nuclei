@@ -8,6 +8,7 @@ using NuclearOption.Networking;
 using Nuclei.CritzOS;
 using Nuclei.CritzOS.Features;
 using Nuclei.CritzOS.Features.Commands;
+using Nuclei.CritzOS.Patches.KillsLogging;
 using Nuclei.Events;
 using Nuclei.Features;
 using Nuclei.Features.Commands;
@@ -27,7 +28,17 @@ public class Nuclei : BaseUnityPlugin
     internal new static ManualLogSource? Logger { get; private set; }
     private static Harmony? Harmony { get; set; }
     private static bool IsPatched { get; set; }
+
+    /// <summary>
+    /// Weapon type storage for weapon kill detection.
+    /// </summary>
+    public static readonly UnitWeaponLogStorage WeaponStorage = new();
     
+    /// <summary>
+    /// Weapon name storage for shockwaves.
+    /// </summary>
+    public static readonly ShockwaveWeaponTypeStorage ShockwaveWeaponStorage = new();
+
     private void Awake()
     {
         Instance = this;
@@ -115,7 +126,6 @@ public class Nuclei : BaseUnityPlugin
     private void RegisterCommands()
     {
         CommandService.RegisterCommand(new SayCommand(Config));
-        CommandService.RegisterCommand(new NewMissionCommand(Config));
         CommandService.RegisterCommand(new KickCommand(Config));
         CommandService.RegisterCommand(new BanCommand(Config));
         CommandService.RegisterCommand(new SetPermissionLevelCommand(Config));
@@ -129,25 +139,15 @@ public class Nuclei : BaseUnityPlugin
         
         CommandService.RegisterCommand(new ReportCommand(Config));
         CommandService.RegisterCommand(new DonateCommand(Config));
-        CommandService.RegisterCommand(new updateMotdCommand(Config));
+        CommandService.RegisterCommand(new UpdateMotdCommand(Config));
         CommandService.RegisterCommand(new DiscordCommand(Config));
         CommandService.RegisterCommand(new AddFundsCommand(Config));
-        CommandService.RegisterCommand(new SetMissionCommand(Config));
+        CommandService.RegisterCommand(new WhisperCommand(Config));
     }
 
     private void SubscribeToEvents()
     {
         PlayerEvents.PlayerJoined += OnPlayerJoin;
-    }
-
-    // TODO: Move these somewhere else?
-    private static void HandleConsoleCommand(string rawLine, string[] args)
-    {
-        Logger?.LogInfo($"> {rawLine}");
-        if (args.Length == 0) return;
-
-        var cmd = args[0].ToLowerInvariant();
-        CommandService.TryExecuteCommand(cmd, args.Skip(1).ToArray());
     }
 
     private static void OnPlayerJoin(Player player)

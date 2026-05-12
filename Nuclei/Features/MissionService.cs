@@ -242,14 +242,14 @@ public static class MissionService
         return Globals.DedicatedServerManagerInstance.missionRotation.allMissions;
     }
 
-    public static void SendMissionReminder()
+    internal static void SendMissionReminder()
     {
         var currentMissionTime = Time.timeSinceLevelLoad;
         var maxMissionTime = MissionService.GetCurrentMissionMaxTime();
         ChatService.SendChatMessage($"Remaining mission time: {(int)((maxMissionTime - currentMissionTime)/60)} minutes");
     }
 
-    public static void SendEndingMissionReminder()
+    internal static void SendEndingMissionReminder()
     {
         var currentMissionTime = MissionService.GetCurrentMissionTime();
         var maxMissionTime = MissionService.GetCurrentMissionMaxTime();
@@ -258,11 +258,10 @@ public static class MissionService
     }
 
     // Will guarantee enough funds to provide the Regular Income set by the mission, until everyone is rank 3 or higher
-    public static void SetMinimumWage()
+    internal static void SetMinimumWage()
     {
         try
         {
-            Nuclei.Logger?.LogInfo("Determining minimum wage set...");
             HashSet<FactionHQ> h = new HashSet<FactionHQ>();
             var players = Globals.AuthenticatedPlayers;
             var playerCountUnderRank3 = 0;
@@ -279,22 +278,17 @@ public static class MissionService
 
             if (playerCountUnderRank3 == 0)
             {
-                Nuclei.Logger?.LogInfo("Minimum wage won't be set");
                 return;
             }
 
-            Nuclei.Logger?.LogInfo("Minimum wage will be set");
             foreach (var allHQ in h)
             {
                 var val = PlayerUtils.GetPlayerCount() * allHQ.regularIncome;
                 if (allHQ.factionFunds < val)
                 {
                     allHQ.SetFunds(val); // TODO: MODULARIZE THIS
-                    Nuclei.Logger?.LogInfo($"Faction funds set to {val}");
                     return;
                 }
-
-                Nuclei.Logger?.LogInfo($"Faction funds are above {val}. Not setting minimum.");
             }
 
 
