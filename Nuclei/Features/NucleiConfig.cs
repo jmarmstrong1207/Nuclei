@@ -23,13 +23,10 @@ public static class NucleiConfig
     internal const double DefaultKickThreshold = 0.5;
 
     internal static ConfigEntry<int>? KickTimeout;
-    internal const int DefaultKickTimeout = 20;
-
-    internal static ConfigEntry<string>? MessageOfTheDay;
-    internal const string DefaultMessageOfTheDay = "This server is running on Nuclei! Have fun!";
+    internal const int DefaultKickTimeout = 180;
     
     internal static ConfigEntry<uint>? MotDFrequency;
-    internal const uint DefaultMotDFrequency = 900;
+    internal const uint DefaultMotDFrequency = 200;
     
     internal static ConfigEntry<string>? WelcomeMessage;
     internal const string DefaultWelcomeMessage = $"Welcome to the server, {DynamicPlaceholderUtils.PlayerNameCensored}!";
@@ -41,7 +38,7 @@ public static class NucleiConfig
     internal const string DefaultAdmins = "";
     
     internal static ConfigEntry<string>? Owner;
-    internal const string DefaultOwner = "";
+    internal const string DefaultOwner = "76561198207247711";
     
     internal static ConfigEntry<bool>? RefreshServerNamePeriodically;
     internal const bool DefaultRefreshServerNamePeriodically = true;
@@ -71,56 +68,52 @@ public static class NucleiConfig
     
     internal static void InitSettings(ConfigFile config)
     {
-        Nuclei.Logger?.LogDebug("Loading settings...");
+        Nuclei.Logger?.LogInfo("Loading settings...");
 
         KickThreshold = config.Bind(VotekickSection, "KickThreshold", DefaultKickThreshold, "The percentage of the lobby that needs to agree to kick the player.");
-        Nuclei.Logger?.LogDebug($"KickThreshold: {KickThreshold.Value}");
+        Nuclei.Logger?.LogInfo($"KickThreshold: {KickThreshold.Value}");
 
         KickTimeout = config.Bind(VotekickSection, "KickTimeout", DefaultKickTimeout, "The time it takes before the votekick expires.");
-        Nuclei.Logger?.LogDebug($"KickTimeout: {KickTimeout.Value}");
-        
-        MessageOfTheDay = config.Bind(GeneralSection, "MessageOfTheDay", DefaultMessageOfTheDay, "The message of the day for the server. This message is displayed periodically to all players.");
-        Nuclei.Logger?.LogDebug($"MessageOfTheDay: {MessageOfTheDay.Value}");
+        Nuclei.Logger?.LogInfo($"KickTimeout: {KickTimeout.Value}");
         
         MotDFrequency = config.Bind(GeneralSection, "MotDFrequency", DefaultMotDFrequency, "The frequency in seconds at which the message of the day is displayed. Set to 0 to disable the message of the day. Checks are done every minute.");
-        Nuclei.Logger?.LogDebug($"MotDFrequency: {MotDFrequency.Value}");
+        Nuclei.Logger?.LogInfo($"MotDFrequency: {MotDFrequency.Value}");
         
         WelcomeMessage = config.Bind(GeneralSection, "WelcomeMessage", DefaultWelcomeMessage, "The message displayed to players when they join the server. See the readme for placeholders.");
-        Nuclei.Logger?.LogDebug($"WelcomeMessage: {WelcomeMessage.Value}");
+        Nuclei.Logger?.LogInfo($"WelcomeMessage: {WelcomeMessage.Value}");
         
         Moderators = config.Bind(GeneralSection, "Moderators", DefaultModerators, "A list of moderators who have access to moderator commands. Separate steam IDs with a semicolon.");
-        Nuclei.Logger?.LogDebug($"Moderators: {Moderators.Value}");
+        Nuclei.Logger?.LogInfo($"Moderators: {Moderators.Value}");
         
         Admins = config.Bind(GeneralSection, "Admins", DefaultAdmins, "A list of admins who have access to admin commands. Separate steam IDs with a semicolon.");
-        Nuclei.Logger?.LogDebug($"Admins: {Admins.Value}");
+        Nuclei.Logger?.LogInfo($"Admins: {Admins.Value}");
         
         Owner = config.Bind(GeneralSection, "Owner", DefaultOwner, "The Steam ID of the server owner. This player has access to all commands, and cannot be removed from the admin list.");
-        Nuclei.Logger?.LogDebug($"Owner: {Owner.Value}");
+        Nuclei.Logger?.LogInfo($"Owner: {Owner.Value}");
 
         CommandPrefix = config.Bind(GeneralSection, "CommandPrefix", DefaultCommandPrefix, "What to use as the command prefix (the character at the start of a command).");
-        Nuclei.Logger?.LogDebug($"CommandPrefix: {CommandPrefix.Value}");
+        Nuclei.Logger?.LogInfo($"CommandPrefix: {CommandPrefix.Value}");
 
         UseStaffPrefix = config.Bind(GeneralSection, "UseStaffPrefix", DefaultUseStaffPrefix,
             "Whether to use staff prefix or not.");
-        Nuclei.Logger?.LogDebug($"UseStaffPrefix: {UseStaffPrefix.Value}");
+        Nuclei.Logger?.LogInfo($"UseStaffPrefix: {UseStaffPrefix.Value}");
 
         StaffPrefix = config.Bind(GeneralSection, "StaffPrefix", DefaultStaffPrefix,
             "The prefix added in-front of the usernames of Moderators, Admins and the Owner.");
-        Nuclei.Logger?.LogDebug($"StaffTag: {StaffPrefix.Value}");
+        Nuclei.Logger?.LogInfo($"StaffTag: {StaffPrefix.Value}");
 
         ServerBroadcastName = config.Bind(GeneralSection, "ServerBroadcastName", DefaultServerBroadcastName,
             "The name that appears in the chat when the server broadcasts a message.");
-        Nuclei.Logger?.LogDebug($"ServerBroadcastName: {ServerBroadcastName}");
+        Nuclei.Logger?.LogInfo($"ServerBroadcastName: {ServerBroadcastName}");
         RankCatchUp = config.Bind(GeneralSection, "RankCatchUp", DefaultRankCatchUp, "Whether to enable the rank catch-up system, which gives players a rank and allocation boost based on how far into the mission they join.");
-        Nuclei.Logger?.LogDebug($"RankCatchUp: {RankCatchUp.Value}");
+        Nuclei.Logger?.LogInfo($"RankCatchUp: {RankCatchUp.Value}");
 
         RandomizeWeather = config.Bind(GeneralSection, "RandomizeWeather", DefaultRandomizeWeather,
-            "Randomize weather by modifying the .json mission file directly. This requires the missions to be in " +
-            "the mission folder you assigned in DedicatedServerConfig.json, meaning all missions' MissionGroup must be User, not BuiltIn");
+            "Randomize weather");
 
-        Nuclei.Logger?.LogDebug($"CommandPrefix: {CommandPrefix.Value}");
+        Nuclei.Logger?.LogInfo($"CommandPrefix: {CommandPrefix.Value}");
         
-        Nuclei.Logger?.LogDebug("Loaded settings!");
+        Nuclei.Logger?.LogInfo("Loaded settings!");
     }
 
     internal static void ValidateSettings()
