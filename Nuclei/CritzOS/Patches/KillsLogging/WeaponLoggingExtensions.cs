@@ -173,7 +173,7 @@ public static class WeaponLoggingExtensions
         }
         else killerName = killerPUnit?.unitName;
         
-        global::Nuclei.Nuclei.Logger?.LogDebug($"An {killedName} was killed by {killerName} with weapon {killerWeaponName}");
+        Nuclei.Logger?.LogDebug($"An {killedName} was killed by {killerName} with weapon {killerWeaponName}");
 
         if (killerAircraft != null &&
             killerAircraft.Player != null &&
@@ -181,10 +181,14 @@ public static class WeaponLoggingExtensions
             totalReceivedDamage > 1.0)
         {
             // if player-anything teamkill
-            
-            ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}", $"{killerAircraft.unitName} (||{killerAircraft.Player.SteamID}||) killed friendly {killedUnit.unitName} with weapon {killerWeaponName}!");
-            CritzOSDB.LogAITeamkill(killerAircraft.Player, killedUnit);
-            global::Nuclei.Nuclei.Logger?.LogInfo($"{killerAircraft.unitName} (||{killerAircraft.Player.SteamID}||) killed friendly {killedUnit.unitName}! with {killerWeaponName}");
+            Nuclei.Logger?.LogInfo($"{killerAircraft.unitName} (||{killerAircraft.Player.SteamID}||) killed friendly {killedUnit.unitName}! with {killerWeaponName}");
+
+            // Prevent duplicate reports if player TK
+            if (killedAircraft != null && killedAircraft.Player != null)
+            {
+                ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}", $"{killerAircraft.unitName} (||{killerAircraft.Player.SteamID}||) killed friendly {killedUnit.unitName} with weapon {killerWeaponName}!");
+                CritzOSDB.LogAITeamkill(killerAircraft.Player, killedUnit);
+            }
         }
         
         if (killedAircraft is not null &&
