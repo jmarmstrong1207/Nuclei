@@ -43,7 +43,8 @@ public class VoteSkipCommand(ConfigFile config) : PermissionConfigurableCommand(
                 player, 
                 Action,
                 true,
-                false
+                false,
+                "Voteskip current mission"
             );
         }
         else

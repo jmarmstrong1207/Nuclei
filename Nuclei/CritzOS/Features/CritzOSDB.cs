@@ -127,6 +127,8 @@ internal static class CritzOSDB
                     "UPDATE players SET username = @username WHERE steamid = @steamid;";
                 Connection.Execute(sql, new {username = PlayerUtils.StripAllPrefix(playerUsername), steamid = (decimal) playerSteamID});
                 Nuclei.Logger?.LogInfo($"Updated username {playerUsername} in DB");
+                
+                // TODO - RECORD USERNAME CHANGE IN SEPARATE TABLE
             }
         }
     }

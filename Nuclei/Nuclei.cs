@@ -143,6 +143,7 @@ public class Nuclei : BaseUnityPlugin
         CommandService.RegisterCommand(new DiscordCommand(Config));
         CommandService.RegisterCommand(new AddFundsCommand(Config));
         CommandService.RegisterCommand(new WhisperCommand(Config));
+        CommandService.RegisterCommand(new SetMissionCommand(Config));
     }
 
     private void SubscribeToEvents()

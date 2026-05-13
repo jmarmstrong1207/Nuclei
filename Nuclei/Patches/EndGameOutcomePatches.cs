@@ -15,5 +15,7 @@ internal static class EndGameOutcomePatches
     private static void CompletePostfix()
     {
         MissionEvents.OnMissionEnded(MissionService.CurrentMission!);
+        //ChatService.SendChatMessage("Mission has ended. Please vote /rate <1-10> regarding your experience!!");
+        //RateService.Unlock();
     }
 }

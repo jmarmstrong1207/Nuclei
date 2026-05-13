@@ -25,7 +25,7 @@ public static class ReportCommandService
     {
         message = Regex.Replace(message, @"@", "");
         return SendDiscordMessage(username, $"<@&1489759287936024726> {message} \n\n" +
-                                            $"*Mission: {MissionService.CurrentMission.Name}* \n" +
+                                            $"*Mission: {MissionService.GetCurrentMission().Name}* \n" +
                                             $"*Server: {CritzOSGlobals.ServerName}*", CritzOSGlobals.ReportsChannelWebhookURL);
     }
 
@@ -56,4 +56,15 @@ public static class ReportCommandService
         }
         
     }
+
+    /*
+    public static bool SendFeedback(string playerName, int rate)
+    {
+        var message = $"Rated mission: {rate}/10 \n\n" +
+                        $"*Mission: {MissionService.GetCurrentMission().Name}* \n" +
+                        $"*Server: {CritzOSGlobals.ServerName}*";
+        return SendDiscordMessage(playerName, message, CritzOSGlobals.FeedbackChannelWebhookURL);
+
+    }
+    */
 }
