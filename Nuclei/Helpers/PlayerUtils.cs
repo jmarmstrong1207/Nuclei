@@ -18,6 +18,16 @@ namespace Nuclei.Helpers;
 public static class PlayerUtils
 {
 
+    /// <summary>
+    ///     Get the Player object from an INetworkPlayer object.
+    /// </summary>
+    /// <param name="networkPlayer"> The INetworkPlayer object. </param>
+    /// <returns> The Player object, if available. </returns>
+    public static Player? GetPlayer(this INetworkPlayer networkPlayer)
+    {
+        return networkPlayer.Identity?.GetComponent<Player>();
+    }
+    
     public static void KickPlayer(Player player)
     {
         try
@@ -50,6 +60,18 @@ public static class PlayerUtils
             Nuclei.Logger?.LogError($"An error has occured while attempting to ban. Report this to the server owner");
             return false;
         }
+    }
+    
+    /// <summary>
+    ///     Tries to find a player on the server from his steamID.
+    /// </summary>
+    /// <param name="steamid">The steamID to search for</param>
+    /// <param name="playerObject">Player that got found</param>
+    /// <returns>false if no object was found</returns>
+    public static bool TryFindPlayerBySteamId(ulong steamid, out Player? playerObject)
+    {
+        playerObject = Globals.AuthenticatedPlayers.FirstOrDefault(p => p.GetPlayer()?.SteamID == steamid)?.GetPlayer();
+        return playerObject != null; 
     }
 
     /// <summary>
@@ -131,6 +153,17 @@ public static class PlayerUtils
         return StripIDPrefix(StripStaffPrefix(playerName));
     }
     
+    /// <summary>
+    /// Checks if a player is staff.
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
+    public static bool IsStaff(Player player)
+    {
+        return !(!NucleiConfig.IsAdmin(player.SteamID) &&
+                 !NucleiConfig.IsOwner(player.SteamID) &&
+                 !NucleiConfig.IsModerator(player.SteamID));
+    }
 
     /// <summary>
     ///     Apply or remove the staff tag based on player permission level.
@@ -144,18 +177,6 @@ public static class PlayerUtils
                                                    !NucleiConfig.IsModerator(playerObject.SteamID))) return;
         var newName = $"{NucleiConfig.StaffPrefix!.Value} {playerObject.PlayerName}";
         playerObject.PlayerName = newName;
-    }
-
-    internal static int ID = 1;
-    public static void ApplyID(Player player)
-    {
-        var newName = $"[{ID++}] {player.PlayerName}";
-        player.PlayerName = newName;
-    }
-
-    public static void ResetIDCount()
-    {
-        ID = 1;
     }
 
     public static bool TryFindPlayerbyID(int i, out Player? player)

@@ -28,10 +28,10 @@ internal static class CritzOSDB
     }
 
     // Logs manual kicks
-    public static void LogKick(Player player)
+    public static void LogKick(ulong player)
     {
         const string sql = "INSERT INTO kick_log (steamid) VALUES (@steamid);";
-        Connection.Execute(sql, new { steamid = (decimal) player.SteamID });
+        Connection.Execute(sql, new { steamid = (decimal) player});
     }
     
     private static void DetermineKick(Player player)
@@ -61,7 +61,7 @@ internal static class CritzOSDB
             if (ServerRemoteCommands.Instance.FindAndRunCommand(msg).StatusCode == StatusCode.Success)
             {
                 ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}", $"Player {player.PlayerName} has been autokicked");
-                LogKick(player);
+                LogKick(player.SteamID);
             }
         }
     }
@@ -185,19 +185,16 @@ internal static class CritzOSDB
         IsMarkedForReview(atkPlayer);
     }
 
-    public static void LogVoteKick(Player targetPlayer, Player initiator, string reason)
+    public static void LogVoteKick(ulong targetPlayer, ulong initiator, string reason)
     {
-        AddPlayer(targetPlayer.SteamID, targetPlayer.PlayerName);
-        AddPlayer(initiator.SteamID, initiator.PlayerName);
         const string sql = "INSERT INTO votekick_log (steamid, steamid_of_votekick_initiator, reason) VALUES (@steamid, @steamid_of_votekick_initiator, @reason);";
         Connection.Execute(sql, 
             new
             {
-                steamid = (decimal) targetPlayer.SteamID, 
-                steamid_of_votekick_initiator = (decimal) initiator.SteamID, 
+                steamid = (decimal) targetPlayer, 
+                steamid_of_votekick_initiator = (decimal) initiator, 
                 reason
             });
-        Connection.Query($"INSERT INTO votekick_log (steamid, steamid_of_votekick_initiator, reason) VALUES ({targetPlayer.SteamID}, {initiator.SteamID}, '{reason}');").AsList();
     }
 
     public static void LogWhisper(Player player, Player targetPlayer, string message)

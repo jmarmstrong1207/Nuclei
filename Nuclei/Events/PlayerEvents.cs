@@ -28,7 +28,5 @@ public static class PlayerEvents
     internal static void OnPlayerLeft(Player e)
     {
         PlayerLeft?.Invoke(e);
-        ReportCommandService.LogChatMessage($"CritzOS {CritzOSGlobals.ServerName}",
-            $"`{e.PlayerName} ({e.SteamID}) left the game`");
     }
 }

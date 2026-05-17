@@ -34,27 +34,30 @@ public class KickCommand(ConfigFile config) : PermissionConfigurableCommand(conf
         var target = args[0];
 
         int idx = int.Parse(args[0]);
-        if (!PlayerUtils.TryFindPlayerbyID(idx, out Player? targetPlayer))
+        PlayerIdentificationService.GetPlayerById(idx, out var targetPlayer);
+        if (targetPlayer == null)
         {
             ChatService.SendPrivateChatMessage("Could not find player to votekick.", player);
             Nuclei.Logger?.LogWarning($"Ban command run. Player [{target}] not found.");
             return false;
         }
+        
+        PlayerUtils.TryFindPlayerBySteamId((ulong)targetPlayer, out var p);
 
         var msg = new CommandMessage
         {
             name = "kick-player",
             arguments =
             [
-                Convert.ToString(targetPlayer!.SteamID)
+                Convert.ToString(p.SteamID)
             ]
         };
 
         if (ServerRemoteCommands.Instance.FindAndRunCommand(msg).StatusCode == StatusCode.Success)
         {
-            ChatService.SendPrivateChatMessage($"Player {targetPlayer.PlayerName} has been kicked", player);
-            CritzOSDB.LogKick(targetPlayer);
-            Nuclei.Logger?.LogInfo($"Player {targetPlayer.PlayerName} has been kicked");
+            ChatService.SendPrivateChatMessage($"Player {p.PlayerName} has been kicked", player);
+            CritzOSDB.LogKick((ulong)targetPlayer);
+            Nuclei.Logger?.LogInfo($"Player {p.PlayerName} has been kicked");
             return true;
         }
         else

@@ -24,7 +24,6 @@ public class MissionSaveLoadPatches
     {
         if (!__result || mission == null) return;
 
-        PlayerUtils.ResetIDCount();
         RandomizeWeather(ref mission);
         ModifyDifficulty(ref mission);
         CancelVote();

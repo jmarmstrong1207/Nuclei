@@ -149,13 +149,18 @@ public class Nuclei : BaseUnityPlugin
     private void SubscribeToEvents()
     {
         PlayerEvents.PlayerJoined += OnPlayerJoin;
+        PlayerEvents.PlayerLeft += OnPlayerLeave;
     }
 
     private static void OnPlayerJoin(Player player)
     {
-        Nuclei.Logger?.LogInfo($"{player.PlayerName} joined the game! SteamID: {player.SteamID}");
+        Logger?.LogInfo($"{player.PlayerName} joined the game! SteamID: {player.SteamID}");
         PlayerUtils.ApplyOrRemoveStaffTag(player);
-        PlayerUtils.ApplyID(player);
+        
+        if (!PlayerUtils.IsStaff(player))
+        {
+            PlayerIdentificationService.AssignNewPlayer(player);
+        }
         
         // CRITZOS-SPECIFIC STUFF
         if (NucleiConfig.RankCatchUp!.Value) RankCatchUpService.CatchUpPlayer(player);
@@ -170,5 +175,12 @@ public class Nuclei : BaseUnityPlugin
             CritzOSDB.AddPlayer(player.SteamID, player.PlayerName);
         }).Start();
 
+    }
+    private static void OnPlayerLeave(Player player)
+    {
+        ReportCommandService.LogChatMessage($"CritzOS {CritzOSGlobals.ServerName}",
+            $"`{player.PlayerName} ({player.SteamID}) left the game`");
+        Logger?.LogInfo($"{player.PlayerName} : {player.SteamID} - left the game");
+        PlayerIdentificationService.RemovePlayer(player);
     }
 }

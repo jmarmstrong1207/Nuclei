@@ -40,22 +40,25 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
     {
         int idx = int.Parse(args[0]);
         string reason = string.Join(" ", args.Skip(1).ToArray());
-        if (!PlayerUtils.TryFindPlayerbyID(idx, out var targetPlayer))
+        PlayerIdentificationService.GetPlayerById(idx, out var targetPlayer);
+        if (targetPlayer == null)
         {
             ChatService.SendPrivateChatMessage("Could not find player to votekick.", player);
             return false;
         }
+        
+        PlayerUtils.TryFindPlayerBySteamId((ulong)targetPlayer, out var p);
 
         void OnPass()
         {
-            ReportCommandService.SendReport($"{player.PlayerName} ({CritzOSGlobals.ServerName}", $"Votekick for {targetPlayer.PlayerName} has passed. Reason: {reason}");
-            CritzOSDB.LogVoteKick(targetPlayer, player, reason);
-            PlayerUtils.KickPlayer(targetPlayer);
+            ReportCommandService.SendReport($"{player.PlayerName} ({CritzOSGlobals.ServerName}", $"Votekick for {p.PlayerName} has passed. Reason: {reason}");
+            CritzOSDB.LogVoteKick((ulong)targetPlayer, player.SteamID, reason);
+            PlayerUtils.KickPlayer(p);
         }
 
         if (VoteService.CanStartVote())
         {
-            var startingMessage = $"A vote to kick {targetPlayer!.PlayerName} has started. Reason: {reason}";
+            var startingMessage = $"A vote to kick {p!.PlayerName} has started. Reason: {reason}";
             ReportCommandService.SendReport($"{player.PlayerName} ({CritzOSGlobals.ServerName}",
                 startingMessage);
             ChatService.SendChatMessage(startingMessage);
