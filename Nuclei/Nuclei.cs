@@ -157,10 +157,7 @@ public class Nuclei : BaseUnityPlugin
         Logger?.LogInfo($"{player.PlayerName} joined the game! SteamID: {player.SteamID}");
         PlayerUtils.ApplyOrRemoveStaffTag(player);
         
-        if (!PlayerUtils.IsStaff(player))
-        {
-            PlayerIdentificationService.AssignNewPlayer(player);
-        }
+        PlayerIdentificationService.AssignNewPlayer(player);
         
         // CRITZOS-SPECIFIC STUFF
         if (NucleiConfig.RankCatchUp!.Value) RankCatchUpService.CatchUpPlayer(player);
