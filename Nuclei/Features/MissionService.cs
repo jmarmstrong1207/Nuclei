@@ -257,41 +257,20 @@ public static class MissionService
             ChatService.SendChatMessage($"MISSION ENDING SOON! Remaining mission time: {(int)(maxMissionTime - currentMissionTime)/60} minutes");
     }
 
-    // Will guarantee enough funds to provide the Regular Income set by the mission, until everyone is rank 3 or higher
     internal static void SetMinimumWage()
     {
         try
         {
-            HashSet<FactionHQ> h = new HashSet<FactionHQ>();
-            var players = Globals.AuthenticatedPlayers;
-            var playerCountUnderRank3 = 0;
-            foreach (INetworkPlayer item in players)
+            foreach (var faction in FactionRegistry.GetAllHQs())
             {
-                Player? p;
-                item.TryGetPlayer(out p);
-                if (p && p.PlayerRank <= 2)
+                var val = PlayerUtils.GetPlayerCount() * faction.regularIncome;
+                if (faction.factionFunds < val)
                 {
-                    h.Add(p.HQ); // TODO: EXPENSIVE. FIND OUT HOW TO GET FACTION HQs BETTER
-                    playerCountUnderRank3++;
-                }
-            }
-
-            if (playerCountUnderRank3 == 0)
-            {
-                return;
-            }
-
-            foreach (var allHQ in h)
-            {
-                var val = PlayerUtils.GetPlayerCount() * allHQ.regularIncome;
-                if (allHQ.factionFunds < val)
-                {
-                    allHQ.SetFunds(val); // TODO: MODULARIZE THIS
+                    faction.SetFunds(val);
                     return;
+
                 }
             }
-
-
         }
         catch (Exception e)
         {
