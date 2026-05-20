@@ -45,7 +45,7 @@ public class BanCommand(ConfigFile config) : PermissionConfigurableCommand(confi
             return false;
         }
 
-        var reason = $"Player: {targetPlayer!.PlayerName}, " + args.Skip(1);
+        var reason = $"Player: {targetPlayer!.PlayerName}, " + string.Join(" ", args.Skip(1));
         if (PlayerUtils.BanPlayer(targetPlayer, reason))
         {
             ChatService.SendPrivateChatMessage($"Player {targetPlayer.PlayerName} has been banned", player);
