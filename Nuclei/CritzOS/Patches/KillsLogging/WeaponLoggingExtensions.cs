@@ -184,7 +184,7 @@ public static class WeaponLoggingExtensions
             Nuclei.Logger?.LogInfo($"{killerAircraft.unitName} (||{killerAircraft.Player.SteamID}||) killed friendly {killedUnit.unitName}! with {killerWeaponName}");
 
             // Prevent duplicate reports if player TK
-            if (killedAircraft != null && killedAircraft.Player != null)
+            if (killedAircraft == null)
             {
                 ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}", $"{killerAircraft.unitName} (||{killerAircraft.Player.SteamID}||) killed friendly {killedUnit.unitName} with weapon {killerWeaponName}!");
                 CritzOSDB.LogAITeamkill(killerAircraft.Player, killedUnit);
