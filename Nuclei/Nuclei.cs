@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using Mirage.SteamworksSocket;
 using NuclearOption.Networking;
 using Nuclei.CritzOS;
 using Nuclei.CritzOS.Features;
@@ -24,6 +27,7 @@ namespace Nuclei;
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class Nuclei : BaseUnityPlugin
 {
+    internal static DateTime ServerStartTime; // Used to restart server over 24 hours
     internal static Nuclei? Instance { get; private set; }
     internal new static ManualLogSource? Logger { get; private set; }
     private static Harmony? Harmony { get; set; }
@@ -41,12 +45,14 @@ public class Nuclei : BaseUnityPlugin
 
     private void Awake()
     {
+        ServerStartTime = DateTime.Now;
         Instance = this;
         
         Logger = base.Logger;
         
         Logger?.LogInfo($"Loading {PluginInfo.PLUGIN_NAME} v{PluginInfo.PLUGIN_VERSION}...");
         
+        ServerEvents.OnServerStarted();
 
         try
         {
@@ -144,6 +150,8 @@ public class Nuclei : BaseUnityPlugin
         CommandService.RegisterCommand(new AddFundsCommand(Config));
         CommandService.RegisterCommand(new WhisperCommand(Config));
         CommandService.RegisterCommand(new SetMissionCommand(Config));
+        CommandService.RegisterCommand(new RestartCommand(Config));
+        CommandService.RegisterCommand(new RestartAfterMissionCommand(Config));
     }
 
     private void SubscribeToEvents()
@@ -173,11 +181,32 @@ public class Nuclei : BaseUnityPlugin
         }).Start();
 
     }
+
     private static void OnPlayerLeave(Player player)
     {
         ReportCommandService.LogChatMessage($"CritzOS {CritzOSGlobals.ServerName}",
             $"`{player.PlayerName} ({player.SteamID}) left the game`");
         Logger?.LogInfo($"{player.PlayerName} : {player.SteamID} - left the game");
         PlayerIdentificationService.RemovePlayer(player);
+
+        // TODO: REMOVE WHEN MEMORY LEAKS ARE FIXED
+        Logger?.LogInfo($"Player left. Remaining players: {PlayerUtils.GetPlayerCount()}");
+        if (PlayerUtils.GetPlayerCount() == 0)
+        {
+            Thread.Sleep(20000);
+            if (PlayerUtils.GetPlayerCount() == 0) // Check again in case it's just a mission switch
+            {
+                Logger?.LogInfo($"RESTARTING SERVER...");
+                Process.Start("/usr/bin/bash",
+                    $"-c \"sudo systemctl restart nuclear_option_{CritzOSGlobals.ServerName.ToUpper()}\"");
+            }
+        }
+    }
+    internal static void RestartServer()
+    {
+        var port = Globals.DedicatedServerManagerInstance.Config.QueryPort.Value + 1; // Always 1 increment above this
+        Logger?.LogInfo($"RESTARTING SERVER AFTER MISSION ENDS...");
+        Process.Start("python3",
+            $"/home/steam/Nuclear-Option-Server-Tools/restart-server.py {port}");
     }
 }

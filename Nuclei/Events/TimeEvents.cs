@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Mirage;
 using NuclearOption.Networking;
+using Nuclei.CritzOS;
 using Nuclei.Features;
 using Nuclei.Features.Commands;
 using Nuclei.Helpers;
@@ -26,9 +27,9 @@ public static class TimeEvents
 
     internal static void OnEveryMinute()
     {
-        MissionService.SendEndingMissionReminder();
-        
-        MissionService.SetMinimumWage();
+       MissionService.SendEndingMissionReminder();
+
+       //MissionService.SetMinimumWage();
     }
 
     internal static void OnEvery10Minutes()
@@ -39,6 +40,8 @@ public static class TimeEvents
 
     internal static void OnEvery30Minutes()
     {
+        if (DateTime.Now.Subtract(Nuclei.ServerStartTime).Hours >= 24)
+            Nuclei.RestartServer();
     }
 
     internal static void OnEveryHour()
