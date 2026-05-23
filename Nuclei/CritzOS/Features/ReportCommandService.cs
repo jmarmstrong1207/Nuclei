@@ -9,6 +9,12 @@ namespace Nuclei.CritzOS.Features;
 // ReSharper disable once InconsistentNaming
 public static class ReportCommandService
 {
+    private static readonly WebClient _webClient;
+
+    static ReportCommandService()
+    {
+        _webClient = new WebClient();
+    }
     
     public static bool SendReportUnsanitized(string username, string message)
     {
@@ -46,7 +52,8 @@ public static class ReportCommandService
 
         try
         {
-            new WebClient().UploadValues(url, discordValues);
+            
+            _webClient.UploadValues(url, discordValues);
             return true;
         }
         catch (WebException e)
