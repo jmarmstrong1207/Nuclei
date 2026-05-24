@@ -56,7 +56,7 @@ public class KickCommand(ConfigFile config) : PermissionConfigurableCommand(conf
         if (ServerRemoteCommands.Instance.FindAndRunCommand(msg).StatusCode == StatusCode.Success)
         {
             ChatService.SendPrivateChatMessage($"Player {p.PlayerName} has been kicked", player);
-            CritzOSDB.LogKick((ulong)targetPlayer);
+            _ = CritzOSDB.LogKickAsync((ulong)targetPlayer);
             Nuclei.Logger?.LogInfo($"Player {p.PlayerName} has been kicked");
             return true;
         }

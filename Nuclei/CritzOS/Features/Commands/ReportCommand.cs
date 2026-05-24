@@ -28,11 +28,12 @@ public class ReportCommand(ConfigFile config) : PermissionConfigurableCommand(co
     {
         string report = String.Join(" ", args);
         Nuclei.Logger?.LogInfo($"Player {player.PlayerName} reported: {report}.");
-        if (ReportCommandService.SendManualReport( PlayerUtils.StripStaffPrefix(player.PlayerName), report))
+        try
         {
+            ReportCommandService.SendManualReport(PlayerUtils.StripStaffPrefix(player.PlayerName), report);
             ChatService.SendPrivateChatMessage("Report has been sent!", player);
         }
-        else
+        catch
         {
             ChatService.SendPrivateChatMessage("Message failed to send (THIS SHOULDN'T HAPPEN!!!)", player);
         }

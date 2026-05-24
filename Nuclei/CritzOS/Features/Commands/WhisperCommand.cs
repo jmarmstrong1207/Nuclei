@@ -57,7 +57,7 @@ public class WhisperCommand(ConfigFile config) : PermissionConfigurableCommand(c
         ChatService.SendPrivateChatMessage($"{player.PlayerName} whispered: {message}", found!);
         ChatService.SendPrivateChatMessage($"Message sent to {found!.PlayerName}: {message}", player);
         
-        CritzOSDB.LogWhisper(player, found, message);
+        _ = CritzOSDB.LogWhisperAsync(player, found, message);
         
         return true;
     }

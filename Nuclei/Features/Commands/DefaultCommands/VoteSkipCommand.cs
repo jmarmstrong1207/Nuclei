@@ -27,7 +27,7 @@ public class VoteSkipCommand(ConfigFile config) : PermissionConfigurableCommand(
         void Action()
         {
             ReportCommandService.LogChatMessage($"{player.PlayerName}", "Voteskip has passed");
-            CritzOSDB.LogVoteskipSuccess(player.SteamID, MissionService.GetCurrentMission());
+            _ = CritzOSDB.LogVoteskipSuccessAsync(player.SteamID, MissionService.GetCurrentMission());
 
             MissionService.StartNextMission(player);
         }

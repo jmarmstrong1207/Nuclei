@@ -1,13 +1,14 @@
 using System;
-using BepInEx.Logging;
 using HarmonyLib;
 using NuclearOption.SavedMission;
 using Nuclei.CritzOS;
 using Nuclei.CritzOS.Features;
 using Nuclei.Features;
-using Nuclei.Helpers;
+
 // ReSharper disable InconsistentNaming
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
+namespace Nuclei.Patches;
 
 [HarmonyPriority(Priority.First)]
 [HarmonyWrapSafe]
@@ -27,11 +28,9 @@ public class MissionSaveLoadPatches
         RandomizeWeather(ref mission);
         ModifyDifficulty(ref mission);
         CancelVote();
-        ReportCommandService.LogChatMessage($"CritzOS {CritzOSGlobals.ServerName}",$"LOADING MISSION {mission.Name}");
-        Nuclei.Nuclei.Logger?.LogInfo($"LOADING MISSION {mission.Name}");
+        ReportCommandService.LogChatMessage($"CritzOS {CritzOSGlobals.ServerName}", $"LOADING MISSION {mission.Name}");
+        Nuclei.Logger?.LogInfo($"LOADING MISSION {mission.Name}");
         //RandomizeTeam(ref mission);
-
-        //RateService.Lock();
     }
 
     private static void CancelVote()
@@ -53,30 +52,29 @@ public class MissionSaveLoadPatches
             Math.Max(mission.missionSettings.nuclearEscalationThreshold, 2100);
 
         mission.missionSettings.strategicEscalationThreshold =
-            Math.Max(mission.missionSettings.strategicEscalationThreshold, 3000); 
-        
+            Math.Max(mission.missionSettings.strategicEscalationThreshold, 3000);
     }
 
     private static void RandomizeWeather(ref Mission mission)
     {
         if (!NucleiConfig.RandomizeWeather!.Value) return;
-        
+
         var rnd = new Random();
         mission.environment.timeOfDay = rnd.Next(3, 18);
         mission.environment.timeFactor = 0f;
         mission.environment.weatherIntensity = (float)(rnd.NextDouble() * 0.9);
         mission.environment.cloudAltitude = (float)(500 + rnd.NextDouble() * 1000);
         mission.environment.windSpeed = (float)(rnd.NextDouble() * 4);
-        mission.environment.windTurbulence = (float)(rnd.NextDouble()* 0.8);
+        mission.environment.windTurbulence = (float)(rnd.NextDouble() * 0.8);
         mission.environment.windHeading = rnd.Next(0, 360);
     }
-    
+
     // CRITZOS SPECIFIC! WOULD NEED CONFIG ADDING TO MAKE IT PUBLIC BASICALLY
     private static void RandomizeTeam(ref Mission mission)
     {
         if (mission.Name == "THE BOSCALI INVASION - FALL OF FELDSPAR")
         {
-            Nuclei.Nuclei.Logger?.LogInfo("SKIPPING TEAM RANDOMIZATION FOR THIS MISSION");
+            Nuclei.Logger?.LogInfo("SKIPPING TEAM RANDOMIZATION FOR THIS MISSION");
             return;
         }
         var rnd = new Random();
@@ -91,7 +89,10 @@ public class MissionSaveLoadPatches
             mission.factions[0].preventJoin = false;
             mission.factions[1].preventJoin = true;
         }
-        Nuclei.Nuclei.Logger?.LogInfo($"{mission.factions[0].factionName} preventjoin set to {mission.factions[0].preventJoin}");
-        Nuclei.Nuclei.Logger?.LogInfo($"{mission.factions[1].factionName} preventjoin set to {mission.factions[1].preventJoin}");
+
+        Nuclei.Logger?.LogInfo(
+            $"{mission.factions[0].factionName} preventjoin set to {mission.factions[0].preventJoin}");
+        Nuclei.Logger?.LogInfo(
+            $"{mission.factions[1].factionName} preventjoin set to {mission.factions[1].preventJoin}");
     }
 }

@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Specialized;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Nuclei.Features;
 
 namespace Nuclei.CritzOS.Features;
@@ -16,32 +18,32 @@ public static class ReportCommandService
         _webClient = new WebClient();
     }
     
-    public static bool SendReportUnsanitized(string username, string message)
+    public static void SendReportUnsanitized(string username, string message)
     {
-        return SendDiscordMessage(username, message, CritzOSGlobals.WebhookURL);
+        SendDiscordMessage(username, message, CritzOSGlobals.WebhookURL);
     }
     
-    public static bool SendReport(string username, string message)
+    public static void SendReport(string username, string message)
     {
         message = Regex.Replace(message, @"@", "");
-        return SendDiscordMessage(username, message, CritzOSGlobals.WebhookURL);
+        SendDiscordMessage(username, message, CritzOSGlobals.WebhookURL);
     }
     
-    public static bool SendManualReport(string username, string message)
+    public static void SendManualReport(string username, string message)
     {
         message = Regex.Replace(message, @"@", "");
-        return SendDiscordMessage(username, $"<@&1489759287936024726> {message} \n\n" +
+        SendDiscordMessage(username, $"<@&1489759287936024726> {message} \n\n" +
                                             $"*Mission: {MissionService.GetCurrentMission().Name}* \n" +
                                             $"*Server: {CritzOSGlobals.ServerName}*", CritzOSGlobals.ReportsChannelWebhookURL);
     }
 
-    public static bool LogChatMessage(string username, string message)
+    public static void LogChatMessage(string username, string message)
     {
         message = Regex.Replace(message, @"@", "");
-        return SendDiscordMessage(username, message, CritzOSGlobals.ChatLogWebhookURL);
+        SendDiscordMessage(username, message, CritzOSGlobals.ChatLogWebhookURL);
     }
 
-    private static bool SendDiscordMessage(string username, string message, string url)
+    private static void SendDiscordMessage(string username, string message, string url)
     {
         var discordValues = new NameValueCollection
         {
@@ -52,14 +54,11 @@ public static class ReportCommandService
 
         try
         {
-            
-            _webClient.UploadValues(url, discordValues);
-            return true;
+            new WebClient().UploadValuesAsync(new Uri(url), discordValues);
         }
         catch (WebException e)
         {
             Nuclei.Logger?.LogError(e.Message);
-            return false;
         }
         
     }

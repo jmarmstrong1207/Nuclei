@@ -32,7 +32,7 @@ internal static class ChatManagerPatches
             : $"[{now}] {player!.PlayerName} sent message in {player.HQ.faction.factionName} chat: {message}");
 
         ReportCommandService.LogChatMessage(player!.PlayerName, message);
-        CritzOSDB.LogChat(player, message);
+        _ = CritzOSDB.LogChatAsync(player, message);
 
         return true;
     }

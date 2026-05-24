@@ -187,7 +187,7 @@ public static class WeaponLoggingExtensions
             if (killedAircraft == null)
             {
                 ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}", $"{killerAircraft.unitName} (||{killerAircraft.Player.SteamID}||) killed friendly {killedUnit.unitName} with weapon {killerWeaponName}!");
-                CritzOSDB.LogAITeamkill(killerAircraft.Player, killedUnit);
+                _ = CritzOSDB.LogAITeamkillAsync(killerAircraft.Player, killedUnit);
             }
         }
         
@@ -207,7 +207,7 @@ public static class WeaponLoggingExtensions
             ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}",
                 $"{killerAircraft.unitName} (||{killerAircraft.Player.SteamID}||) teamkilled player {killedAircraft.unitName} with weapon {killerWeaponName}!");
             // TODO - LOG WEAPON NAME IN DB
-            CritzOSDB.LogPlayerTeamkill(killerAircraft.Player, killedAircraft.Player);
+            _ = CritzOSDB.LogPlayerTeamkillAsync(killerAircraft.Player, killedAircraft.Player);
             global::Nuclei.Nuclei.Logger?.LogInfo($"{killerAircraft.unitName} (||{killerAircraft.Player.SteamID}||) teamkilled player {killedAircraft.unitName} with weapon {killerWeaponName}!");
         }
         

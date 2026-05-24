@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Dapper;
 using Npgsql;
 using NuclearOption.DedicatedServer.Commands;
@@ -12,39 +13,33 @@ namespace Nuclei.CritzOS.Features;
 #pragma warning disable CS1591
 internal static class CritzOSDB
 {
-    private static readonly NpgsqlConnection Connection;
-
-    static CritzOSDB()
+    public static async Task LogChatAsync(Player player, string message)
     {
-        Connection =
-            new NpgsqlConnection(CritzOSGlobals.ConnectionString);
-        Connection.Open();
-    }
-
-    public static void LogChat(Player player, string message)
-    {
+        var connection = new NpgsqlConnection(CritzOSGlobals.ConnectionString);
         const string sql = "INSERT INTO chat_log (steamid, message, server_name) VALUES (@steamid, @message, @server_name);";
-        Connection.Execute(sql, new { steamid = (decimal) player.SteamID, message, server_name = CritzOSGlobals.ServerName });
+        await connection.ExecuteAsync(sql, new { steamid = (decimal) player.SteamID, message, server_name = CritzOSGlobals.ServerName });
     }
 
     // Logs manual kicks
-    public static void LogKick(ulong player)
+    public static async Task LogKickAsync(ulong player)
     {
+        var connection = new NpgsqlConnection(CritzOSGlobals.ConnectionString);
         const string sql = "INSERT INTO kick_log (steamid) VALUES (@steamid);";
-        Connection.Execute(sql, new { steamid = (decimal) player});
+        await connection.ExecuteAsync(sql, new { steamid = (decimal) player});
     }
     
-    private static void DetermineKick(Player player)
+    private static async Task DetermineKickAsync(Player player)
     {
+        var connection = new NpgsqlConnection(CritzOSGlobals.ConnectionString);
         var minTime = DateTime.SpecifyKind(DateTime.Now.AddHours(-1), DateTimeKind.Utc).ToString("yyyy-MM-dd");
-        var teamkillLogQuery = Connection
-            .Query($"SELECT * FROM teamkill_log WHERE steamid = {(decimal) player.SteamID} AND time >= '{minTime}';").AsList();
+        var teamkillLogQuery = (await connection
+            .QueryAsync($"SELECT * FROM teamkill_log WHERE steamid = {(decimal) player.SteamID} AND time >= '{minTime}';")).AsList();
 
-        var teamkillAILogQuery = Connection
-            .Query($"SELECT * FROM teamkill_ai_log WHERE steamid = {(decimal) player.SteamID} AND time >= '{minTime}';").AsList();
+        var teamkillAILogQuery = (await connection
+            .QueryAsync($"SELECT * FROM teamkill_ai_log WHERE steamid = {(decimal) player.SteamID} AND time >= '{minTime}';")).AsList();
         
-        var kickLogQuery = Connection
-            .Query($"SELECT * FROM kick_log WHERE steamid = {(decimal) player.SteamID} AND time >= '{minTime}';").AsList();
+        var kickLogQuery = (await connection
+            .QueryAsync($"SELECT * FROM kick_log WHERE steamid = {(decimal) player.SteamID} AND time >= '{minTime}';")).AsList();
 
         if (teamkillLogQuery.Count / (kickLogQuery.Count + 1) >= 4 ||
             teamkillAILogQuery.Count / (kickLogQuery.Count + 1) >= 20)
@@ -61,71 +56,46 @@ internal static class CritzOSDB
             if (ServerRemoteCommands.Instance.FindAndRunCommand(msg).StatusCode == StatusCode.Success)
             {
                 ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}", $"Player {player.PlayerName} has been autokicked");
-                LogKick(player.SteamID);
+                await LogKickAsync(player.SteamID);
             }
         }
     }
 
     
     // Review based on # of kicks within a span of time
-    private static void IsMarkedForReview(Player player)
+    private static async Task CheckMarkedForReviewAsync(Player player)
     {
+        var connection = new NpgsqlConnection(CritzOSGlobals.ConnectionString);
         var minTime = DateTime.SpecifyKind(DateTime.Now.AddDays(-14), DateTimeKind.Utc).ToString("yyyy-MM-dd");
-        var kickLogQuery = Connection.Query($"SELECT * FROM kick_log WHERE steamid = { (decimal) player.SteamID} AND time >= '{minTime}';").AsList();
+        var kickLogQuery = (await connection.QueryAsync($"SELECT * FROM kick_log WHERE steamid = { (decimal) player.SteamID} AND time >= '{minTime}';")).AsList();
 
         if (kickLogQuery.Count >= 3)
         {
             ReportCommandService.SendReportUnsanitized($"CritzOS {CritzOSGlobals.ServerName}",
                 $"<@&1489759287936024726> Player {player.PlayerName} (||{player.SteamID}||) has been been marked for review");
         }
-
-        // Original code to instead outright ban 
-        /*
-        var minTime = DateTime.SpecifyKind(DateTime.Now.AddDays(-14), DateTimeKind.Utc).ToString("yyyy-MM-dd");
-        var kick_log_query = connection.Query($"SELECT * FROM kick_log WHERE steamid = {player.SteamID} AND time >= '{minTime}';").AsList();
-
-        //var votekick_query = connection.Query($"SELECT * FROM votekick_log WHERE time >= {minTime}").AsList();
-
-        if (kick_log_query.Count >= 3)
-        {
-            CommandMessage msg = new CommandMessage();
-            msg.name = "banlist-add";
-            msg.arguments = new string[]
-            {
-                Convert.ToString(player.SteamID), $"Autobanned at {DateTime.Now.ToString("yyyy-MM-dd")}"
-            };
-
-            if (ServerRemoteCommands.Instance.FindAndRunCommand(msg).StatusCode == StatusCode.Success)
-            {
-                ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}", $"Player {player.PlayerName} has been autobanned");
-            }
-
-            return true;
-        }
-
-        return false;
-        */
     }
 
-    public static void AddPlayer(ulong playerSteamID, string playerUsername)
+    public static async Task AddPlayerAsync(ulong playerSteamID, string playerUsername)
     {
+        var connection = new NpgsqlConnection(CritzOSGlobals.ConnectionString);
         // Will safely error out when there's a duplicate
         try
         {
             var sql = "INSERT INTO players (steamid, username) VALUES (@steamid, @username);";
-            Connection.Execute(sql, new { steamid = (decimal) playerSteamID, username = playerUsername });
+            await connection.ExecuteAsync(sql, new { steamid = (decimal) playerSteamID, username = playerUsername });
         }
         catch
         {
             Nuclei.Logger?.LogInfo($"Player {playerUsername} already exists in database");
             
             // Change username to the most recent one
-            var x = Connection.QueryFirst<Players>($"SELECT username FROM players WHERE steamid = @steamid;", new {steamid = (decimal) playerSteamID});
+            var x = connection.QueryFirst<Players>($"SELECT username FROM players WHERE steamid = @steamid;", new {steamid = (decimal) playerSteamID});
             if (x.username != PlayerUtils.StripAllPrefix(playerUsername))
             {
                 var sql =
                     "UPDATE players SET username = @username WHERE steamid = @steamid;";
-                Connection.Execute(sql, new {username = PlayerUtils.StripAllPrefix(playerUsername), steamid = (decimal) playerSteamID});
+                await connection.ExecuteAsync(sql, new {username = PlayerUtils.StripAllPrefix(playerUsername), steamid = (decimal) playerSteamID});
                 Nuclei.Logger?.LogInfo($"Updated username {playerUsername} in DB");
                 
                 // TODO - RECORD USERNAME CHANGE IN SEPARATE TABLE
@@ -133,13 +103,14 @@ internal static class CritzOSDB
         }
     }
 
-    public static void LogVoteskipSuccess(ulong steamid, Mission currentMission)
+    public static async Task LogVoteskipSuccessAsync(ulong steamid, Mission currentMission)
     {
+        var connection = new NpgsqlConnection(CritzOSGlobals.ConnectionString);
         var currentMissionName = currentMission.Name;
         var currentTime = MissionService.GetCurrentMissionTime();
         
         var sql = "INSERT INTO voteskip_log (steamid, mission_name, mission_time_at_skip) VALUES ( @steamid, @mission_name, @mission_time_at_skip );";
-        Connection.Execute(sql,
+        await connection.ExecuteAsync(sql,
             new
             {
                 steamid = (decimal) steamid, 
@@ -148,12 +119,13 @@ internal static class CritzOSDB
             });
     }
 
-    public static void LogPlayerTeamkill(Player atkPlayer, Player victimPlayer)
+    public static async Task LogPlayerTeamkillAsync(Player atkPlayer, Player victimPlayer)
     {
+        var connection = new NpgsqlConnection(CritzOSGlobals.ConnectionString);
         ChatService.SendPrivateChatMessage($"WARNING: TEAMKILLING WILL RESULT IN A KICK OR BAN. BE CAREFUL NEXT TIME!", atkPlayer);
         
         const string sql = "INSERT INTO teamkill_log (steamid, steamidofplayerkilled, attacker_aircraft_type, victim_aircraft_type) VALUES (@steamid, @steamidofplayerkilled, @attacker_aircraft_type, @victim_aircraft_type );";
-        Connection.Execute(sql,
+        await connection.ExecuteAsync(sql,
             new
             {
                 steamid = (decimal) atkPlayer.SteamID, 
@@ -162,18 +134,19 @@ internal static class CritzOSDB
                 victim_aircraft_type = victimPlayer.Aircraft.unitName
             });
 
-        DetermineKick(atkPlayer);
-        IsMarkedForReview(atkPlayer);
+        await DetermineKickAsync(atkPlayer);
+        await CheckMarkedForReviewAsync(atkPlayer);
 
     }
     
     // ReSharper disable once InconsistentNaming
-    public static void LogAITeamkill(Player atkPlayer, PersistentUnit victimPU)
+    public static async Task LogAITeamkillAsync(Player atkPlayer, PersistentUnit victimPU)
     {
+        var connection = new NpgsqlConnection(CritzOSGlobals.ConnectionString);
         ChatService.SendPrivateChatMessage($"WARNING: TEAMKILLING WILL RESULT IN A KICK OR BAN. BE CAREFUL NEXT TIME!", atkPlayer);
 
         const string sql = "INSERT INTO teamkill_ai_log (steamid, attacker_aircraft_type, aitype) VALUES (@steamid, @attacker_aircraft_type, @aitype);";
-        Connection.Execute(sql,
+        await connection.ExecuteAsync(sql,
             new
             {
                 steamid = (decimal) atkPlayer.SteamID,
@@ -181,14 +154,15 @@ internal static class CritzOSDB
                 aitype = victimPU.unitName
             });
         
-        DetermineKick(atkPlayer);
-        IsMarkedForReview(atkPlayer);
+        await DetermineKickAsync(atkPlayer);
+        await CheckMarkedForReviewAsync(atkPlayer);
     }
 
-    public static void LogVoteKick(ulong targetPlayer, ulong initiator, string reason)
+    public static async Task LogVoteKickAsync(ulong targetPlayer, ulong initiator, string reason)
     {
+        var connection = new NpgsqlConnection(CritzOSGlobals.ConnectionString);
         const string sql = "INSERT INTO votekick_log (steamid, steamid_of_votekick_initiator, reason) VALUES (@steamid, @steamid_of_votekick_initiator, @reason);";
-        Connection.Execute(sql, 
+        await connection.ExecuteAsync(sql, 
             new
             {
                 steamid = (decimal) targetPlayer, 
@@ -197,10 +171,11 @@ internal static class CritzOSDB
             });
     }
 
-    public static void LogWhisper(Player player, Player targetPlayer, string message)
+    public static async Task LogWhisperAsync(Player player, Player targetPlayer, string message)
     {
+        var connection = new NpgsqlConnection(CritzOSGlobals.ConnectionString);
         const string sql = "INSERT INTO whisper_log (steamid, target_steamid, message) VALUES (@steamid, @target_steamid, @message);";
-        Connection.Execute(sql,
+        await connection.ExecuteAsync(sql,
             new
             {
                 steamid = (decimal) player.SteamID, 

@@ -52,7 +52,7 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
         void OnPass()
         {
             ReportCommandService.SendReport($"{player.PlayerName} ({CritzOSGlobals.ServerName}", $"Votekick for {p.PlayerName} has passed. Reason: {reason}");
-            CritzOSDB.LogVoteKick((ulong)targetPlayer, player.SteamID, reason);
+            _ = CritzOSDB.LogVoteKickAsync((ulong)targetPlayer, player.SteamID, reason);
             PlayerUtils.KickPlayer(p);
         }
 

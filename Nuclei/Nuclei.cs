@@ -174,17 +174,12 @@ public class Nuclei : BaseUnityPlugin
         
         
         // Add user to database or update their username
-        new Thread(() => 
-        {
-            Thread.CurrentThread.IsBackground = true; 
-            CritzOSDB.AddPlayer(player.SteamID, player.PlayerName);
-        }).Start();
-
+        _ = CritzOSDB.AddPlayerAsync(player.SteamID, player.PlayerName);
     }
 
     private static void OnPlayerLeave(Player player)
     {
-        ReportCommandService.LogChatMessage($"CritzOS {CritzOSGlobals.ServerName}",
+       ReportCommandService.LogChatMessage($"CritzOS {CritzOSGlobals.ServerName}",
             $"`{player.PlayerName} ({player.SteamID}) left the game`");
         Logger?.LogInfo($"{player.PlayerName} : {player.SteamID} - left the game");
         PlayerIdentificationService.RemovePlayer(player);
