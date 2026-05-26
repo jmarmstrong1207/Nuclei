@@ -25,6 +25,7 @@ public class MissionSaveLoadPatches
     {
         if (!__result || mission == null) return;
 
+        mission.missionSettings.wrecksDecayTime = 600;
         RandomizeWeather(ref mission);
         ModifyDifficulty(ref mission);
         CancelVote();
@@ -61,12 +62,13 @@ public class MissionSaveLoadPatches
 
         var rnd = new Random();
         mission.environment.timeOfDay = rnd.Next(3, 18);
-        mission.environment.timeFactor = 0f;
+        mission.environment.timeFactor = 2f;
         mission.environment.weatherIntensity = (float)(rnd.NextDouble() * 0.9);
         mission.environment.cloudAltitude = (float)(500 + rnd.NextDouble() * 1000);
         mission.environment.windSpeed = (float)(rnd.NextDouble() * 4);
         mission.environment.windTurbulence = (float)(rnd.NextDouble() * 0.8);
         mission.environment.windHeading = rnd.Next(0, 360);
+            
     }
 
     // CRITZOS SPECIFIC! WOULD NEED CONFIG ADDING TO MAKE IT PUBLIC BASICALLY

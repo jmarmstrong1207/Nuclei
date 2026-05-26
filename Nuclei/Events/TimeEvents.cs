@@ -31,7 +31,7 @@ public static class TimeEvents
        MissionService.SendEndingMissionReminder();
        CritzOSDB.LogPlayerCountAsync();
 
-       //MissionService.SetMinimumWage();
+       MissionService.SetMinimumWage();
     }
 
     internal static void OnEvery10Minutes()
