@@ -28,9 +28,8 @@ public static class TimeEvents
 
     internal static void OnEveryMinute()
     {
+        _ = CritzOSDB.LogPlayerCountAsync();
        MissionService.SendEndingMissionReminder();
-       CritzOSDB.LogPlayerCountAsync();
-
        MissionService.SetMinimumWage();
     }
 

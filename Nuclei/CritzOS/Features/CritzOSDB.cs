@@ -24,7 +24,7 @@ internal static class CritzOSDB
     {
         var connection = new NpgsqlConnection(CritzOSGlobals.ConnectionString);
         var serverName = CritzOSGlobals.ServerName.ToLower();
-        var sql = $"INSERT INTO {serverName}_player_count (count) VALUES (@count);";
+        var sql = $"INSERT INTO {serverName}_player_count (player_count) VALUES (@count);";
         await connection.ExecuteAsync(sql, new { count = PlayerUtils.GetPlayerCount() });
     }
     
