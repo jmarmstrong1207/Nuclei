@@ -20,6 +20,14 @@ internal static class CritzOSDB
         await connection.ExecuteAsync(sql, new { steamid = (decimal) player.SteamID, message, server_name = CritzOSGlobals.ServerName });
     }
 
+    public static async Task LogPlayerCountAsync()
+    {
+        var connection = new NpgsqlConnection(CritzOSGlobals.ConnectionString);
+        var serverName = CritzOSGlobals.ServerName.ToLower();
+        var sql = $"INSERT INTO {serverName}_player_count (count) VALUES (@count);";
+        await connection.ExecuteAsync(sql, new { count = PlayerUtils.GetPlayerCount() });
+    }
+    
     // Logs manual kicks
     public static async Task LogKickAsync(ulong player)
     {

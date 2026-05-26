@@ -3,6 +3,7 @@ using System.Linq;
 using Mirage;
 using NuclearOption.Networking;
 using Nuclei.CritzOS;
+using Nuclei.CritzOS.Features;
 using Nuclei.Features;
 using Nuclei.Features.Commands;
 using Nuclei.Helpers;
@@ -28,6 +29,7 @@ public static class TimeEvents
     internal static void OnEveryMinute()
     {
        MissionService.SendEndingMissionReminder();
+       CritzOSDB.LogPlayerCountAsync();
 
        //MissionService.SetMinimumWage();
     }
