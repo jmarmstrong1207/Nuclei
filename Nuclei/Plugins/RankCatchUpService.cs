@@ -10,19 +10,17 @@ public static class RankCatchUpService
 {
     public static void CatchUpPlayer(Player player)
     {
+        var currentMissionTime = Time.timeSinceLevelLoad;
+        var maxMissionTime = Globals.DedicatedServerManagerInstance.CurrentMissionOption.MaxTime;
+        var percentComplete = (currentMissionTime / maxMissionTime) * 2;
+        var rank = 0;
+
+        if (percentComplete < .20) return;
+        
         if (player.GetAuthData().SaveData.Faction != null)
         {
             return; // Means that they already joined the server. No double-dipping!
         }
-        var currentMissionTime = Time.timeSinceLevelLoad;
-        var maxMissionTime = Globals.DedicatedServerManagerInstance.CurrentMissionOption.MaxTime;
-        var percentComplete = (currentMissionTime / maxMissionTime) * 2;
-
-        //int avgRank = (int)Globals.AuthenticatedPlayers.Select(x => x.GetPlayer()!.PlayerRank).Average();
-
-        var rank = 0;
-
-        if (percentComplete < .20) return;
         if (percentComplete >= .80)
         {
             rank = 5;
