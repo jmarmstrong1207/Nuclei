@@ -175,6 +175,8 @@ public class Nuclei : BaseUnityPlugin
         
         // Add user to database or update their username
         _ = CritzOSDB.AddPlayerAsync(player.SteamID, player.PlayerName);
+        
+        RestartService.CancelRestart();
     }
 
     private static void OnPlayerLeave(Player player)
@@ -184,18 +186,8 @@ public class Nuclei : BaseUnityPlugin
         Logger?.LogInfo($"{player.PlayerName} : {player.SteamID} - left the game");
         PlayerIdentificationService.RemovePlayer(player);
 
-        // TODO: REMOVE WHEN MEMORY LEAKS ARE FIXED
         Logger?.LogInfo($"Player left. Remaining players: {PlayerUtils.GetPlayerCount()}");
-        if (PlayerUtils.GetPlayerCount() == 0)
-        {
-            Thread.Sleep(20000);
-            if (PlayerUtils.GetPlayerCount() == 0) // Check again in case it's just a mission switch
-            {
-                Logger?.LogInfo($"RESTARTING SERVER...");
-                Process.Start("/usr/bin/bash",
-                    $"-c \"sudo systemctl restart nuclear_option_{CritzOSGlobals.ServerName.ToUpper()}\"");
-            }
-        }
+        RestartService.CheckIfNoPlayers();
     }
     internal static void RestartServer()
     {
