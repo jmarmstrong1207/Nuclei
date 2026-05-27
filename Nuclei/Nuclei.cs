@@ -152,6 +152,8 @@ public class Nuclei : BaseUnityPlugin
         CommandService.RegisterCommand(new SetMissionCommand(Config));
         CommandService.RegisterCommand(new RestartCommand(Config));
         CommandService.RegisterCommand(new RestartAfterMissionCommand(Config));
+        
+        CommandService.RegisterCommand(new GambleCommand(Config));
     }
 
     private void SubscribeToEvents()
