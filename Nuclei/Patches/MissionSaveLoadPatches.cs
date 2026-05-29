@@ -61,7 +61,7 @@ public class MissionSaveLoadPatches
         if (!NucleiConfig.RandomizeWeather!.Value) return;
 
         var rnd = new Random();
-        mission.environment.timeOfDay = rnd.Next(3, 18);
+        mission.environment.timeOfDay = rnd.Next(2, 11);
         mission.environment.timeFactor = 1f;
         mission.environment.weatherIntensity = (float)(rnd.NextDouble() * 0.9);
         mission.environment.cloudAltitude = (float)(500 + rnd.NextDouble() * 1000);

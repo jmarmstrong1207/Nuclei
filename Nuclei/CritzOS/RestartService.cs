@@ -28,9 +28,10 @@ public class RestartService
 
     public static void CancelRestart()
     {
-        // Players joined — cancel any pending restart
+        // Player joined — cancel any pending restart
         if (_restartCts != null)
         {
+            Nuclei.Logger?.LogInfo($"A Player joined. Restart canceled");
             _restartCts?.Cancel();
             _restartCts = null;
         }
@@ -40,8 +41,8 @@ public class RestartService
     {
         try
         {
-            Nuclei.Logger?.LogInfo($"No players. Waiting 20 seconds to restart...");
-            await Task.Delay(20000, ct);
+            Nuclei.Logger?.LogInfo($"No players. Waiting 60 seconds to restart...");
+            await Task.Delay(60000, ct);
 
             // Re-check after delay
             if (PlayerUtils.GetPlayerCount() == 0)
