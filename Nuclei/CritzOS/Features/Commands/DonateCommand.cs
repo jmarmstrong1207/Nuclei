@@ -15,7 +15,7 @@ public class DonateCommand(ConfigFile config) : PermissionConfigurableCommand(co
 {
     public override string Name { get; } = "donate";
     public override string Description { get; } = "Donate some of your money to somebody";
-    public override string Usage { get; } = "donate <ID in their name> <Amount in millions>. e.g: '/donate 1 50' donates 50 million";
+    public override string Usage { get; } = $"{NucleiConfig.CommandPrefixChar}donate <ID in their name> <Amount in millions>. e.g: '{NucleiConfig.CommandPrefixChar}donate 1 50' donates 50 million";
 
     public override bool Validate(Player player, string[] args)
     {

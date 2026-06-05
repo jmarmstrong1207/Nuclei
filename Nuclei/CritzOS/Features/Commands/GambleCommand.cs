@@ -16,7 +16,7 @@ public class GambleCommand(ConfigFile config) : PermissionConfigurableCommand(co
 {
     public override string Name { get; } = "gamble";
     public override string Description { get; } = "50% chance you receive 2x your bet. IF you lose, 20% chance you eject out of rage";
-    public override string Usage { get; } = $"{NucleiConfig.CommandPrefixChar}gamble <$ in million>. eg: '/gamble 100' gambles 100m";
+    public override string Usage { get; } = $"{NucleiConfig.CommandPrefixChar}gamble <$ in million>. eg: '{NucleiConfig.CommandPrefixChar}gamble 100' gambles 100m";
 
     public override bool Validate(Player player, string[] args)
     {

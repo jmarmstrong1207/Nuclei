@@ -15,7 +15,7 @@ public class UpdateMotdCommand(ConfigFile config) : PermissionConfigurableComman
 {
     public override string Name { get; } = "updatemotd";
     public override string Description { get; } = "update motd";
-    public override string Usage { get; } = "updatemotd";
+    public override string Usage { get; } = $"{NucleiConfig.CommandPrefixChar}updatemotd";
 
     public override bool Validate(Player player, string[] args)
     {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 using NuclearOption.Chat;
 using NuclearOption.Networking;
 using Nuclei.Helpers;
@@ -104,7 +105,7 @@ public static class ChatService
     /// </summary>
     private static int _i = 0;
 
-    private static List<string> _motdList = [];
+    private static string[] _motdList = [];
 
     /// <summary>
     /// Update the motd list
@@ -112,9 +113,9 @@ public static class ChatService
     public static void UpdateMotD()
     {
         var json = File.ReadAllText("motd.json");
-        var parsedJson = System.Text.Json.Nodes.JsonNode.Parse(json)!;
+        var parsedJson = JsonConvert.DeserializeObject<MotdJSON>(json)!;
 
-        _motdList = parsedJson["MotdList"]!.AsArray().GetValues<string>().ToList();
+        _motdList = parsedJson.MotdList;
         
         Nuclei.Logger?.LogInfo("Updated motd list:");
         foreach (var motd in _motdList)
@@ -128,7 +129,7 @@ public static class ChatService
     {
         string actualMotD = _motdList[_i++]; 
         
-        if (_i >= _motdList.Count) _i = 0;
+        if (_i >= _motdList.Length) _i = 0;
         
         if (!CanSend(actualMotD, ignoreRateLimit: true))
         {
@@ -139,4 +140,9 @@ public static class ChatService
         if (Globals.ChatManagerInstance)
             SendChatMessage(actualMotD);
     }
+}
+
+public class MotdJSON
+{
+    public string[] MotdList = [];
 }

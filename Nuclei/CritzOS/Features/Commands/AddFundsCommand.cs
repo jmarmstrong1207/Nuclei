@@ -15,7 +15,7 @@ public class AddFundsCommand(ConfigFile config) : PermissionConfigurableCommand(
 {
     public override string Name { get; } = "addfunds";
     public override string Description { get; } = "Give some money to somebody";
-    public override string Usage { get; } = "addfunds <ID in their name> <Amount in millions>. e.g: '/addfunds 1 50' donates 50 million";
+    public override string Usage { get; } = $"{NucleiConfig.CommandPrefixChar}addfunds <ID in their name> <Amount in millions>. e.g: '{NucleiConfig.CommandPrefixChar}addfunds 1 50' donates 50 million";
 
     public override bool Validate(Player player, string[] args)
     {

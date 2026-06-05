@@ -17,7 +17,7 @@ public class ReportCommand(ConfigFile config) : PermissionConfigurableCommand(co
 {
     public override string Name { get; } = "report";
     public override string Description { get; } = "Report anything to the server owner";
-    public override string Usage { get; } = "report <message>";
+    public override string Usage { get; } = $"{NucleiConfig.CommandPrefixChar}report <message>";
 
     public override bool Validate(Player player, string[] args)
     {

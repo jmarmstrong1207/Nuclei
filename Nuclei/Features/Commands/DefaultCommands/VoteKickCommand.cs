@@ -13,8 +13,8 @@ namespace Nuclei.Features.Commands.DefaultCommands;
 public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(config)
 {
     public override string Name { get; } = "votekick";
-    public override string Description { get; } = "lets you vote to kick a user from a list";
-    public override string Usage { get; } = $"{NucleiConfig.CommandPrefixChar}votekick <ID in their name from the Scoreboard> <Reason>";
+    public override string Description { get; } = "lets you vote to kick a user";
+    public override string Usage { get; } = $"{NucleiConfig.CommandPrefixChar}votekick <ID from the Scoreboard> <Reason>";
     public override PermissionLevel DefaultPermissionLevel { get; } = PermissionLevel.Everyone;
 
     public override bool Validate(Player player, string[] args)
