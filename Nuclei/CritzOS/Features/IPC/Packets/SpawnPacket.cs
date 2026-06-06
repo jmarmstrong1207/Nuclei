@@ -29,7 +29,6 @@ public class SpawnPacket: CommunicationPacket
     /// <inheritdoc />
     public override CommunicationPacket? Process()
     {
-        Nuclei.Logger.LogInfo($"Spawning {unitName}");
         
         foreach (var x in UnitDefinitionCombiner.CombinedList)
         {
@@ -46,6 +45,11 @@ public class SpawnPacket: CommunicationPacket
                         var q = new Quaternion(rotationX, rotationY, rotationZ, rotationW);
                         Spawner.i.SpawnFromUnitDefinitionInEditor(x, globalPos, q, hq, uniqueName);
                         Nuclei.Logger?.LogInfo($"HorusMod: Spawned {x.unitName} at {globalPos}");
+                        
+                        if (!ZeusLogBuffer.spawnedBuffer.ContainsKey(unitName))
+                            ZeusLogBuffer.spawnedBuffer.Add(unitName, 1);
+                        else
+                            ZeusLogBuffer.spawnedBuffer[unitName] += 1;
                     }
                 }
                 

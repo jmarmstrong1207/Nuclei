@@ -4,6 +4,7 @@ using Mirage;
 using NuclearOption.Networking;
 using Nuclei.CritzOS;
 using Nuclei.CritzOS.Features;
+using Nuclei.CritzOS.Features.IPC.Packets;
 using Nuclei.Features;
 using Nuclei.Features.Commands;
 using Nuclei.Helpers;
@@ -24,6 +25,8 @@ public static class TimeEvents
 
     internal static void OnEvery30Seconds()
     {
+        ZeusLogBuffer.LogSpawnedBuffer();
+        ZeusLogBuffer.LogDeletedBuffer();
     }
 
     internal static void OnEveryMinute()

@@ -57,6 +57,11 @@ public class DeletePacket: CommunicationPacket
 
         Mirage.NetworkServer.Destroy(go);
         Nuclei.Logger.LogInfo($"Deleted unit {unitName}");
+        
+        if (!ZeusLogBuffer.deletedBuffer.ContainsKey(unitName))
+            ZeusLogBuffer.deletedBuffer.Add(unitName, 1);
+        else
+            ZeusLogBuffer.deletedBuffer[unitName] += 1;
     }
     
     /// <summary>Finds the nearest gameplay unit root by walking UP the hierarchy only.</summary>
