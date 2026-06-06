@@ -1,6 +1,9 @@
+using System;
 using HarmonyLib;
 using Mirage;
+using Nuclei.CritzOS.Features.IPC;
 using Nuclei.Events;
+using Nuclei.Helpers;
 
 namespace Nuclei.Patches;
 
@@ -21,6 +24,20 @@ internal static class NetworkServerPatches
     private static void StartServerPostfix()
     {
         ServerEvents.OnServerStarted();
+        try
+        {
+            var port = Globals.DedicatedServerManagerInstance.Config.QueryPort.Value + 2; // Always 1 increment above this
+            Nuclei.Logger.LogInfo($"TCP Port: {port}");
+            Nuclei.Instance._socket = new Socket();
+            Nuclei.Instance._socket.OnJson += Nuclei.Instance.HandleJson;
+            Nuclei.Instance._socket.Start("10.0.0.9", port);
+
+        }
+        catch (Exception e)
+        {
+            Nuclei.Logger.LogError(e);
+            throw;
+        }
     }
     
     [HarmonyPostfix]

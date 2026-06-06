@@ -12,23 +12,23 @@ public class DeletePacket: CommunicationPacket
     /// <inheritdoc />
     public override PacketType type { get; set; } = PacketType.Delete;
 
-    public float originX { get; set; }
-    public float originY { get; set; }
-    public float originZ { get; set; }
-    public float destinationX { get; set; }
-    public float destinationY { get; set; }
-    public float destinationZ { get; set; }
+    public float globalPosX { get; set; }
+    public float globalPosY { get; set; }
+    public float globalPosZ { get; set; }
     
 
     /// <inheritdoc />
     public override CommunicationPacket? Process()
     {
-        var origin = new Vector3(originX, originY, originZ);
-        var destination = new Vector3(destinationX, destinationY, destinationZ);
-        var ray = new Ray(origin, destination);
+        var destination = new GlobalPosition(globalPosX, globalPosY, globalPosZ);
         
+        DeleteNearestUnit(destination);
+        return null;
+        
+        /*
         if (!Physics.Raycast(ray, out RaycastHit hit, 100000f))
         {
+            Nuclei.Logger.LogWarning("WARNING: Could not find selected target to delete");
             return null;
         }
 
@@ -47,15 +47,13 @@ public class DeletePacket: CommunicationPacket
             Nuclei.Logger.LogInfo($"Horus: target is not deletable (map/environment object '{hitObject.name}').");
             return null;
         }
+        */
 
-        DeleteUnit(unitRoot);
-        return null;
     }
-    private static void DeleteUnit(Unit unit)
+    private static void DeleteNearestUnit(GlobalPosition pos)
     {
-        if (unit == null) return;
-        GameObject go = unit.gameObject;
-        string unitName = unit.unitName;
+        UnitRegistry.TryGetNearestUnit(pos, out var go, 100f);
+        string unitName = go.unitName;
 
         Mirage.NetworkServer.Destroy(go);
         Nuclei.Logger.LogInfo($"Deleted unit {unitName}");

@@ -28,11 +28,11 @@ public class Nuclei : BaseUnityPlugin
 {
     internal static DateTime ServerStartTime; // Used to restart server over 24 hours
     internal static Nuclei? Instance { get; private set; }
-    internal new static ManualLogSource? Logger { get; private set; }
+    internal new static ManualLogSource Logger { get; private set; } = null!;
     private static Harmony? Harmony { get; set; }
     private static bool IsPatched { get; set; }
 
-    private Socket? _socket;
+    internal Socket? _socket;
 
     /// <summary>
     /// Weapon type storage for weapon kill detection.
@@ -82,12 +82,9 @@ public class Nuclei : BaseUnityPlugin
             Logger?.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
         else
             Logger?.LogError($"Plugin {PluginInfo.PLUGIN_GUID} failed to load correctly!");
-        _socket = new Socket();
-        _socket.OnJson += HandleJson;
-        _socket.Start("10.0.0.9", 8777);
     }
     
-    private void HandleJson(string msg)
+    internal void HandleJson(string msg)
     {
         var settings = new JsonSerializerSettings(); 
         settings.Converters.Add(new PacketTypeConverter());

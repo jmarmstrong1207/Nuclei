@@ -15,7 +15,6 @@ public class PacketTypeConverter : JsonConverter
     public override bool CanConvert(Type objectType)
     {
         
-        Nuclei.Logger.LogInfo("CANCONVERRT");
         return typeof(CommunicationPacket).IsAssignableFrom(objectType);
     }
 
@@ -25,7 +24,6 @@ public class PacketTypeConverter : JsonConverter
         object? existingValue,
         JsonSerializer serializer)
     {
-        Nuclei.Logger.LogInfo("READJSON!!!!!!!!!!");
         var jo = JObject.Load(reader);
         var type = jo["type"]!.ToObject<PacketType>();
         CommunicationPacket? packet;
