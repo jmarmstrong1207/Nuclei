@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using Mirage.SteamworksSocket;
+using Newtonsoft.Json;
 using NuclearOption.Networking;
 using Nuclei.CritzOS;
 using Nuclei.CritzOS.Features;
 using Nuclei.CritzOS.Features.Commands;
+using Nuclei.CritzOS.Features.IPC;
+using Nuclei.CritzOS.Features.IPC.Packets;
 using Nuclei.CritzOS.Patches.KillsLogging;
 using Nuclei.Events;
 using Nuclei.Features;
@@ -32,6 +31,8 @@ public class Nuclei : BaseUnityPlugin
     internal new static ManualLogSource? Logger { get; private set; }
     private static Harmony? Harmony { get; set; }
     private static bool IsPatched { get; set; }
+
+    private Socket? _socket;
 
     /// <summary>
     /// Weapon type storage for weapon kill detection.
@@ -81,6 +82,19 @@ public class Nuclei : BaseUnityPlugin
             Logger?.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
         else
             Logger?.LogError($"Plugin {PluginInfo.PLUGIN_GUID} failed to load correctly!");
+        _socket = new Socket();
+        _socket.OnJson += HandleJson;
+        _socket.Start("10.0.0.9", 8777);
+    }
+    
+    private void HandleJson(string msg)
+    {
+        var settings = new JsonSerializerSettings(); 
+        settings.Converters.Add(new PacketTypeConverter());
+        Nuclei.Logger.LogInfo(msg);
+        var packet = JsonConvert.DeserializeObject<CommunicationPacket>(msg, settings);
+        CommunicationPacket? respPacket = packet!.Process();
+        if (respPacket is null) return;
     }
 
     private static void PatchAll()
@@ -195,7 +209,8 @@ public class Nuclei : BaseUnityPlugin
     {
         var port = Globals.DedicatedServerManagerInstance.Config.QueryPort.Value + 1; // Always 1 increment above this
         Logger?.LogInfo($"RESTARTING SERVER AFTER MISSION ENDS...");
-        Process.Start("python3",
+        Process.Start("/home/steam/Nuclear-Option-Server-Tools/nuclearENV/bin/python",
             $"/home/steam/Nuclear-Option-Server-Tools/restart-server.py {port}");
     }
+    
 }
