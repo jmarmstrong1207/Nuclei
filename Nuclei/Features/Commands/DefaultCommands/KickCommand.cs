@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using BepInEx.Configuration;
 using NuclearOption.DedicatedServer.Commands;
 using NuclearOption.Networking;
@@ -16,34 +17,48 @@ public class KickCommand(ConfigFile config) : PermissionConfigurableCommand(conf
 {
     public override string Name { get; } = "kick";
     public override string Description { get; } = "Kicks a player from the server.";
-    public override string Usage { get; } = "kick <ID>";
+    public override string Usage { get; } = "kick <ID> <Reason>";
 
     public override bool Validate(Player player, string[] args)
     {
+        if (args.Length == 0) return false;
         if ((args.Length != 0 && !int.TryParse(args[0], out _)) || (args.Length != 0 && int.Parse(args[0]) <= 0))
         {
             ChatService.SendPrivateChatMessage("Number invalid. Please Try again.", player);
             return false;
         }
-        
-        return args.Length == 1;
+        if (args.Length < 2)
+        {
+            ChatService.SendPrivateChatMessage("Please provide a reason.", player);
+            return false;
+        }
+        return args.Length >= 2;
     }
 
     public override bool Execute(Player player, string[] args)
     {
         var target = args[0];
+        var reason = string.Join(" ", args.Skip(1).ToArray());
 
         int idx = int.Parse(args[0]);
         PlayerIdentificationService.GetPlayerById(idx, out var targetPlayer);
         if (targetPlayer == null)
         {
-            ChatService.SendPrivateChatMessage("Could not find player to votekick.", player);
-            Nuclei.Logger?.LogWarning($"Ban command run. Player [{target}] not found.");
+            ChatService.SendPrivateChatMessage("Could not find player to kick.", player);
+            Nuclei.Logger?.LogWarning($"Kick command run. Player [{target}] not found.");
             return false;
         }
         
         PlayerUtils.TryFindPlayerBySteamId((ulong)targetPlayer, out var p);
+        PlayerUtils.KickPlayerAsync(p!, reason);
+        
+        ChatService.SendPrivateChatMessage($"Player {p.PlayerName} has been kicked", player);
+        _ = CritzOSDB.LogKickAsync((ulong)targetPlayer, reason);
+        Nuclei.Logger?.LogInfo($"Player {p.PlayerName} has been kicked. Reason: {reason}");
+        return true;
 
+        // TODO: REUSE THIS WHEN KICK REASONS ARE ADDED BACK BY DEVS
+        /*
         var msg = new CommandMessage
         {
             name = "kick-player",
@@ -65,6 +80,7 @@ public class KickCommand(ConfigFile config) : PermissionConfigurableCommand(conf
             ChatService.SendPrivateChatMessage($"An error has occured while attempting to kick. Report this to the server owner", player);
             Nuclei.Logger?.LogError($"An error has occured while attempting to kick. Report this to the server owner");
         }
+        */
 
         return false;
     }
@@ -75,7 +91,7 @@ public class KickCommand(ConfigFile config) : PermissionConfigurableCommand(conf
 
         if (PlayerUtils.TryFindPlayer(target, out var targetPlayer))
         {
-            PlayerUtils.KickPlayer(targetPlayer!);
+            PlayerUtils.KickPlayerAsync(targetPlayer!, "");
             Nuclei.Logger?.LogInfo($"Player {target} was kicked from the server.");
             ChatService.SendChatMessage($"Player {target} was kicked from the server.");
             return true;

@@ -29,11 +29,11 @@ internal static class CritzOSDB
     }
     
     // Logs manual kicks
-    public static async Task LogKickAsync(ulong player)
+    public static async Task LogKickAsync(ulong player, string reason)
     {
         var connection = new NpgsqlConnection(CritzOSGlobals.ConnectionString);
-        const string sql = "INSERT INTO kick_log (steamid) VALUES (@steamid);";
-        await connection.ExecuteAsync(sql, new { steamid = (decimal) player});
+        const string sql = "INSERT INTO kick_log (steamid, reason) VALUES (@steamid, @reason);";
+        await connection.ExecuteAsync(sql, new { steamid = (decimal) player, reason});
     }
     
     private static async Task DetermineKickAsync(Player player)
@@ -52,6 +52,11 @@ internal static class CritzOSDB
         if (teamkillLogQuery.Count / (kickLogQuery.Count + 1) >= 4 ||
             teamkillAILogQuery.Count / (kickLogQuery.Count + 1) >= 20)
         {
+            ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}", $"Player {player.PlayerName} has been autokicked");
+            var reason = "Auto-kick for Teamkills";
+            await PlayerUtils.KickPlayerAsync(player, reason);
+            await LogKickAsync(player.SteamID, reason);
+            /*
             CommandMessage msg = new CommandMessage
             {
                 name = "kick-player",
@@ -64,8 +69,9 @@ internal static class CritzOSDB
             if (ServerRemoteCommands.Instance.FindAndRunCommand(msg).StatusCode == StatusCode.Success)
             {
                 ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}", $"Player {player.PlayerName} has been autokicked");
-                await LogKickAsync(player.SteamID);
+                await LogKickAsync(player.SteamID, "Auto-kick for Teamkill");
             }
+            */
         }
     }
 

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Mirage;
 using NuclearOption.DedicatedServer.Commands;
 using NuclearOption.Networking;
@@ -28,11 +30,19 @@ public static class PlayerUtils
         return networkPlayer.Identity?.GetComponent<Player>();
     }
     
-    public static void KickPlayer(Player player)
+    public static async Task KickPlayerAsync(Player player, string reason)
     {
         try
         {
-            Globals.NetworkManagerNuclearOptionInstance.KickPlayerAsync(player);
+            var managerNuclearOption = Globals.NetworkManagerNuclearOptionInstance;
+            if (!managerNuclearOption.Server.Active)
+                throw new MethodInvocationException("KickPlayerAsync called when server is not active");
+            INetworkPlayer conn = player.Owner;
+            managerNuclearOption.authenticator.OnKick(conn);
+            const string hostName = "CritzOS";
+            player.KickReason(reason, hostName);
+            await UniTask.Delay(100);
+            conn.Disconnect();
         }
         catch (Exception e)
         {

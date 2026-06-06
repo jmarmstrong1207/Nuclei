@@ -51,9 +51,9 @@ public class VoteKickCommand(ConfigFile config) : PermissionConfigurableCommand(
 
         void OnPass()
         {
+            _ = PlayerUtils.KickPlayerAsync(p, reason);
             ReportCommandService.SendReport($"{player.PlayerName} ({CritzOSGlobals.ServerName}", $"Votekick for {p.PlayerName} has passed. Reason: {reason}");
             _ = CritzOSDB.LogVoteKickAsync((ulong)targetPlayer, player.SteamID, reason);
-            PlayerUtils.KickPlayer(p);
         }
 
         if (VoteService.CanStartVote())
