@@ -31,6 +31,12 @@ public class GambleCommand(ConfigFile config) : PermissionConfigurableCommand(co
             return false;
         }
 
+        if (!player.Aircraft.airborne)
+        {
+            ChatService.SendPrivateChatMessage("You must be airborne before you can gamble!", player);
+            return false;
+        }
+
         if (int.Parse(args[0]) <= 0)
         {
             ChatService.SendPrivateChatMessage("Your bet cannot be negative!", player);
