@@ -125,7 +125,7 @@ public static class MissionService
     /// <param name="option"> The mission to start. </param>
     public static void SetNextMission(MissionOptions option)
     {
-        Globals.DedicatedServerManagerInstance.SetNextMission(option);
+        Globals.DedicatedServerManagerInstance.SetNextMissionAsync(option);
     }
     
     /// <summary>
