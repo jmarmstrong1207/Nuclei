@@ -52,6 +52,13 @@ internal static class CritzOSDB
         if (teamkillLogQuery.Count / (kickLogQuery.Count + 1) >= 4 ||
             teamkillAILogQuery.Count / (kickLogQuery.Count + 1) >= 20)
         {
+            var recentTime = DateTime.SpecifyKind(DateTime.Now.AddMinutes(-5), DateTimeKind.Utc).ToString("yyyy-MM-dd");
+            var recentKickLogQuery = (await connection
+                .QueryAsync($"SELECT * FROM kick_log WHERE steamid = {(decimal) player.SteamID} AND time >= '{recentTime}';")).AsList();
+
+            if (recentKickLogQuery.Count > 0) // Don't kick multiple times in a short period, in case it was a nuke or something
+                return;
+            
             ReportCommandService.SendReport($"CritzOS {CritzOSGlobals.ServerName}", $"Player {player.PlayerName} has been autokicked");
             var reason = "Auto-kick for Teamkills";
             await PlayerUtils.KickPlayerAsync(player, reason);
@@ -80,7 +87,7 @@ internal static class CritzOSDB
     private static async Task CheckMarkedForReviewAsync(Player player)
     {
         var connection = new NpgsqlConnection(CritzOSGlobals.ConnectionString);
-        var minTime = DateTime.SpecifyKind(DateTime.Now.AddDays(-14), DateTimeKind.Utc).ToString("yyyy-MM-dd");
+        var minTime = DateTime.SpecifyKind(DateTime.Now.AddDays(-7), DateTimeKind.Utc).ToString("yyyy-MM-dd");
         var kickLogQuery = (await connection.QueryAsync($"SELECT * FROM kick_log WHERE steamid = { (decimal) player.SteamID} AND time >= '{minTime}';")).AsList();
 
         if (kickLogQuery.Count >= 3)
@@ -172,7 +179,7 @@ internal static class CritzOSDB
         await CheckMarkedForReviewAsync(atkPlayer);
     }
 
-    public static async Task LogVoteKickAsync(ulong targetPlayer, ulong initiator, string reason)
+    public static async Task LogVoteKickAsync(ulong targetPlayer, ulong initiator, string? reason)
     {
         var connection = new NpgsqlConnection(CritzOSGlobals.ConnectionString);
         const string sql = "INSERT INTO votekick_log (steamid, steamid_of_votekick_initiator, reason) VALUES (@steamid, @steamid_of_votekick_initiator, @reason);";
